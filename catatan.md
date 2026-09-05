@@ -71,3 +71,28 @@ Jika pengguna meminta: *"push dan pull ke server"* atau *"deploy ke server"*, ik
 3. Jalankan `git commit -m "<pesan_commit>"`
 4. Jalankan `git push origin main`
 5. Jalankan perintah `plink.exe` di atas untuk melakukan `git pull`, `artisan migrate`, `artisan optimize:clear`, dan `systemctl restart php-fpm-84` di server `webdosman`.
+
+---
+
+## 6. Log & Catatan Proses Push & Commit (OsisDosman)
+
+**Tanggal Eksekusi:** 5 September 2026  
+**Proyek:** E-Voting OSIS SMAN 1 Gianyar (`OsisDosman`)  
+**Remote Target:** `git@github.com:DosmanGianyar/OsisDosman.git` / `https://github.com/DosmanGianyar/OsisDosman.git`  
+**Branch Utama:** `main`
+
+### Urutan Perintah Yang Telah Dieksekusi:
+```powershell
+echo "# OsisDosman" >> README.md
+git init
+git branch -M main
+git remote add origin git@github.com:DosmanGianyar/OsisDosman.git
+git add .
+git commit -m "first commit"
+git push -u origin main
+```
+
+### Catatan Berkas Ter-Commit:
+- **Berkas Dikecualikan (`.gitignore`):** `node_modules/`, `*.sqlite`, `.env` (Keamanan data lokal & credential).
+- **Berkas Ter-Commit (11 Berkas Utama):** `server.js`, `views/login.ejs`, `views/voting.ejs`, `views/admin.ejs`, `public/css/style.css`, `scripts/init-db.js`, `README.md`, `catatan.md`, `package.json`, `package-lock.json`, `.gitignore`.
+- **Status Repository:** Clean & Up to date dengan `origin/main`.
