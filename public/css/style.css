@@ -810,6 +810,43 @@ body::after {
   border: 2px solid #c7d2fe;
 }
 
+/* PC (Desktop) Quick Count Tally Styles */
+.tally-photo-wrapper {
+  width: 140px;
+  aspect-ratio: 3 / 4;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #0f172a;
+  flex-shrink: 0;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.tally-candidate-name {
+  font-size: 22px;
+  font-weight: 900;
+  color: #0f172a;
+  line-height: 1.25;
+}
+
+.tally-candidate-subtitle {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+.tally-vote-count {
+  font-size: 13px;
+  font-weight: 800;
+  color: #475569;
+}
+
+.tally-percent {
+  font-size: 36px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
 @media (max-width: 640px) {
   .quickcount-card {
     padding: 16px 12px !important;
@@ -850,10 +887,16 @@ body::after {
     border-radius: 16px !important;
   }
   .tally-photo-wrapper {
-    width: 55px !important;
+    width: 60px !important;
+    border-radius: 10px !important;
   }
   .tally-candidate-name {
-    font-size: 12px !important;
+    font-size: 12.5px !important;
+    line-height: 1.2 !important;
+  }
+  .tally-candidate-subtitle {
+    font-size: 9.5px !important;
+    margin-top: 2px !important;
   }
   .tally-percent {
     font-size: 22px !important;
