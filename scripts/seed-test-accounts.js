@@ -5,9 +5,9 @@ const bcrypt = require('bcryptjs');
 
 const accounts = [];
 for (let i = 1; i <= 10; i++) {
-  const numStr = String(i).padStart(2, '0');
-  const nisn = `88000000${numStr}`;
-  const nis = `880${numStr}`;
+  const lastDigits = i < 10 ? `7${i}` : '80';
+  const nisn = `88123456${lastDigits}`;
+  const nis = `8812${i < 10 ? '0' + i : '10'}`;
   const name = `Contoh Siswa ${i}`;
   const email = `${nisn}@dosman.sch.id`;
   accounts.push({ name, nisn, nis, email });
@@ -15,6 +15,9 @@ for (let i = 1; i <= 10; i++) {
 
 async function run() {
   const defaultPasswordHash = bcrypt.hashSync('Dosman123', 10);
+
+  // Delete previous 88000000* test accounts if exist
+  const oldPrefix = '88000000%';
 
   // 1. Seed MariaDB if available
   try {
@@ -26,7 +29,10 @@ async function run() {
       database: process.env.DB_NAME || 'sims_db'
     });
 
-    console.log('✅ Connected to MariaDB sims_db, inserting 10 test accounts...');
+    console.log('✅ Connected to MariaDB sims_db. Cleaning old test accounts...');
+    await connection.execute(`DELETE FROM users WHERE nisn LIKE ? OR name LIKE 'Contoh Siswa%'`, [oldPrefix]);
+
+    console.log('🌱 Inserting 10 serial test accounts (8812345671 - 8812345680)...');
     for (const acc of accounts) {
       await connection.execute(
         `INSERT INTO users (name, email, nisn, nis, role, password)
@@ -47,6 +53,7 @@ async function run() {
   console.log('⚡ Seeding SQLite local database...');
   
   sqliteDb.serialize(() => {
+    sqliteDb.run(`DELETE FROM users WHERE nisn LIKE '88000000%' OR name LIKE 'Contoh Siswa%'`);
     accounts.forEach(acc => {
       sqliteDb.run(
         `INSERT INTO users (name, email, nisn, nis, role, password)
