@@ -197,7 +197,7 @@ async function runDb(sql, params = []) {
 
 // Global Tally Calculator
 async function getRealtimeTallyData() {
-  const voters = await queryDb(`SELECT count(*) as count FROM users WHERE role = 'siswa'`);
+  const voters = await queryDb(`SELECT count(*) as count FROM users WHERE role IN ('siswa', 'guru', 'pegawai', 'staf', 'tendik')`);
   const votes = await queryDb(`SELECT count(*) as count FROM votes`);
   const abstain = await queryDb(`SELECT count(*) as count FROM votes WHERE candidate_id IS NULL`);
   const candidates = await queryDb(`SELECT id, candidate_number, name, vice_name, photo FROM candidates ORDER BY candidate_number ASC`);
@@ -270,23 +270,26 @@ app.get('/login', (req, res) => {
   res.render('login', { success, error });
 });
 
+// Eligible Voter Roles (Siswa, Guru, Pegawai/Staf)
+const VOTER_ROLES = ['siswa', 'guru', 'pegawai', 'staf', 'tendik'];
+
 // Submit Login
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
-    req.session.error = 'Silakan masukkan username/NISN dan password!';
+    req.session.error = 'Silakan masukkan NISN/NIP dan password!';
     return res.redirect('/login');
   }
 
   try {
     const users = await queryDb(
-      `SELECT * FROM users WHERE email = ? OR nisn = ? OR nis = ? LIMIT 1`,
-      [username, username, username]
+      `SELECT * FROM users WHERE email = ? OR nisn = ? OR nis = ? OR nip = ? LIMIT 1`,
+      [username, username, username, username]
     );
 
     if (users.length === 0) {
-      req.session.error = 'Akun tidak ditemukan. Periksa NISN atau Email Anda!';
+      req.session.error = 'Akun tidak ditemukan. Periksa NISN, NIP, atau Email Anda!';
       return res.redirect('/login');
     }
 
@@ -302,8 +305,8 @@ app.post('/login', async (req, res) => {
       return res.redirect('/login');
     }
 
-    // Check if student has already voted
-    if (user.role === 'siswa') {
+    // Check if voter (siswa, guru, pegawai) has already voted
+    if (VOTER_ROLES.includes((user.role || '').toLowerCase())) {
       const existingVote = await queryDb(
         `SELECT id FROM votes WHERE voter_id = ? LIMIT 1`,
         [user.id]
@@ -333,9 +336,9 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Student Voting Page
+// Bilik Suara Voting Page (Siswa, Guru, & Pegawai)
 app.get('/voting', async (req, res) => {
-  if (!req.session.user || req.session.user.role !== 'siswa') {
+  if (!req.session.user || !VOTER_ROLES.includes((req.session.user.role || '').toLowerCase())) {
     return res.redirect('/login');
   }
 
@@ -353,7 +356,7 @@ app.get('/voting', async (req, res) => {
     const sessions = await queryDb(`SELECT * FROM voting_sessions WHERE status = 'active' LIMIT 1`);
     const activeSession = sessions[0] || {
       id: 1,
-      title: 'Pemilihan Ketua & Wakil Ketua OSIS SMAN 1 Gianyar 2026/2027',
+      title: 'Pemilihan Ketua OSIS SMAN 1 Gianyar 2026/2027',
       description: 'Silakan tentukan hak suara Anda secara Langsung, Umum, Bebas, Rahasia, Jujur dan Adil.'
     };
 
@@ -378,7 +381,7 @@ app.get('/voting', async (req, res) => {
 
 // Submit Vote (Anti-Spam & Auto Logout)
 app.post('/voting/vote', async (req, res) => {
-  if (!req.session.user || req.session.user.role !== 'siswa') {
+  if (!req.session.user || !VOTER_ROLES.includes((req.session.user.role || '').toLowerCase())) {
     return res.redirect('/login');
   }
 
