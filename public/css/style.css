@@ -302,18 +302,27 @@ body::after {
   transform: scale(1.05);
 }
 
-.paslon-badge {
-  position: absolute;
-  top: 16px;
-  left: 16px;
+.card-badge-header {
+  padding: 16px 16px 4px 16px;
+  text-align: center;
+}
+
+.paslon-badge-static {
+  display: inline-block;
   background: linear-gradient(135deg, #f59e0b, #d97706);
-  color: #fff;
-  padding: 6px 16px;
+  color: #ffffff;
+  padding: 6px 18px;
   border-radius: 40px;
   font-weight: 900;
   font-size: 13px;
-  letter-spacing: 1px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.8px;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+  text-transform: uppercase;
+}
+
+.paslon-badge-static.paslon-2 {
+  background: linear-gradient(135deg, #6366f1, #3b82f6);
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
 }
 
 .candidate-body {
@@ -548,55 +557,117 @@ body::after {
 
 /* Responsive Side-by-Side Mobile Layout for Bilik Suara */
 @media (max-width: 640px) {
+  body {
+    padding: 10px 6px;
+  }
   .app-container {
-    padding: 0 4px;
+    padding: 0 2px;
+  }
+  .app-header {
+    padding: 10px 14px !important;
+    gap: 8px !important;
+    border-radius: 18px !important;
+    margin-bottom: 14px !important;
+  }
+  .brand-logo {
+    width: 38px !important;
+    height: 38px !important;
+  }
+  .brand-title {
+    font-size: 15px !important;
+    line-height: 1.2 !important;
+  }
+  .brand-subtitle {
+    font-size: 10px !important;
+  }
+  .user-badge {
+    font-size: 11px !important;
+    padding: 5px 10px !important;
+    border-radius: 20px !important;
+  }
+  .session-banner {
+    padding: 14px 16px !important;
+    border-radius: 16px !important;
+    margin-bottom: 16px !important;
+  }
+  .session-banner h2 {
+    font-size: 15px !important;
+  }
+  .session-banner p {
+    font-size: 11px !important;
   }
   .candidate-grid {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 10px !important;
+    margin-bottom: 18px !important;
+  }
+  .candidate-card {
+    border-radius: 18px !important;
+  }
+  .card-badge-header {
+    padding: 10px 8px 4px 8px !important;
+  }
+  .paslon-badge-static {
+    padding: 5px 12px !important;
+    font-size: 11px !important;
+    letter-spacing: 0.5px !important;
   }
   .candidate-image-wrapper {
     width: calc(100% - 16px) !important;
     max-width: 150px !important;
     aspect-ratio: 3 / 4 !important;
     height: auto !important;
-    margin: 10px auto 6px auto !important;
+    margin: 4px auto 6px auto !important;
     border-radius: 14px !important;
     border: 2px solid #ffffff !important;
   }
-  .candidate-card {
-    border-radius: 16px !important;
-  }
   .candidate-body {
-    padding: 12px !important;
+    padding: 10px 8px 12px 8px !important;
   }
   .candidate-name {
-    font-size: 14px !important;
+    font-size: 13px !important;
+    text-align: center !important;
+    line-height: 1.25 !important;
   }
   .motto-box {
     padding: 6px 8px !important;
     font-size: 10px !important;
-    margin: 8px 0 !important;
-  }
-  .section-label {
-    font-size: 10px !important;
-  }
-  .section-text {
-    font-size: 11px !important;
-  }
-  .candidate-footer {
-    padding: 10px 10px !important;
+    margin: 6px 0 10px 0 !important;
+    text-align: center !important;
+    border-radius: 8px !important;
   }
   .btn-coblos {
     padding: 10px 6px !important;
     font-size: 11px !important;
     border-radius: 10px !important;
+    gap: 4px !important;
   }
-  .paslon-badge {
-    top: 8px !important;
-    left: 8px !important;
-    padding: 3px 8px !important;
+  .btn-toggle-details {
+    padding: 8px 4px !important;
+    font-size: 9.5px !important;
+    border-radius: 8px !important;
+    margin-top: 6px !important;
+  }
+  .section-label {
+    font-size: 9.5px !important;
+  }
+  .section-text {
     font-size: 10px !important;
+  }
+  .abstain-card {
+    padding: 18px 14px !important;
+    border-radius: 16px !important;
+    margin-bottom: 20px !important;
+  }
+  .abstain-card h3 {
+    font-size: 15px !important;
+  }
+  .abstain-card p {
+    font-size: 11px !important;
+  }
+  .btn-abstain {
+    padding: 10px 16px !important;
+    font-size: 11px !important;
   }
 }
 
