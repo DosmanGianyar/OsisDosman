@@ -89,10 +89,17 @@ async function ensureDefaultCandidates() {
     const sessionCount = sessionRows[0]?.count || 0;
     if (sessionCount === 0) {
       console.log('🌱 Seeding default voting session into voting_sessions table...');
-      await runDb(`
-        INSERT INTO voting_sessions (id, title, description, start_time, end_time, status)
-        VALUES (1, 'Pemilihan Ketua & Wakil Ketua OSIS SMAN 1 Gianyar 2026/2027', 'Silakan tentukan hak suara Anda secara Langsung, Umum, Bebas, Rahasia, Jujur dan Adil.', '2026-09-01 00:00:00', '2026-09-30 23:59:59', 'active')
-      `);
+      if (useMysql) {
+        await runDb(`
+          INSERT INTO voting_sessions (id, title, description, start_time, end_time, status, created_by)
+          VALUES (1, 'Pemilihan Ketua & Wakil Ketua OSIS SMAN 1 Gianyar 2026/2027', 'Silakan tentukan hak suara Anda secara Langsung, Umum, Bebas, Rahasia, Jujur dan Adil.', '2026-09-01 00:00:00', '2026-09-30 23:59:59', 'active', 1)
+        `);
+      } else {
+        await runDb(`
+          INSERT INTO voting_sessions (id, title, description, start_time, end_time, status)
+          VALUES (1, 'Pemilihan Ketua & Wakil Ketua OSIS SMAN 1 Gianyar 2026/2027', 'Silakan tentukan hak suara Anda secara Langsung, Umum, Bebas, Rahasia, Jujur dan Adil.', '2026-09-01 00:00:00', '2026-09-30 23:59:59', 'active')
+        `);
+      }
     }
 
     // 2. Ensure candidates exist
