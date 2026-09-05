@@ -50,9 +50,11 @@ const sqliteDb = new sqlite3.Database(sqliteDbPath);
 let mysqlPool = null;
 let useMysql = false;
 
-try {
-  mysqlPool = mysql.createPool({
-    host: process.env.DB_HOST || '100.73.61.126',
+const primaryDbHost = process.env.DB_HOST || '127.0.0.1';
+
+function createMysqlPool(host) {
+  return mysql.createPool({
+    host: host,
     port: Number(process.env.DB_PORT || 3306),
     user: process.env.DB_USER || 'dosman',
     password: process.env.DB_PASS || '2Z8TdNFDn7c367PD',
@@ -62,22 +64,25 @@ try {
     queueLimit: 0,
     connectTimeout: 3000
   });
-} catch (e) {
-  console.log('Using SQLite fallback database...');
 }
 
 async function checkDatabaseConnection() {
-  if (mysqlPool) {
+  const hostsToTry = [primaryDbHost, '100.73.61.126'];
+  for (const host of hostsToTry) {
     try {
-      const conn = await mysqlPool.getConnection();
-      console.log('✅ Terhubung ke Database Production MariaDB sims_db (webdosman 100.73.61.126)!');
+      const pool = createMysqlPool(host);
+      const conn = await pool.getConnection();
+      console.log(`✅ Terhubung ke Database Production MariaDB sims_db (${host})!`);
+      mysqlPool = pool;
       useMysql = true;
       conn.release();
+      return;
     } catch (err) {
-      console.log('ℹ️ Server MariaDB webdosman offline / tidak terjangkau langsung, menggunakan Database SQLite Lokal.');
-      useMysql = false;
+      // Try next host
     }
   }
+  console.log('ℹ️ Server MariaDB tidak terjangkau langsung, menggunakan Database SQLite Lokal.');
+  useMysql = false;
 }
 checkDatabaseConnection();
 
@@ -136,6 +141,10 @@ async function ensureDefaultCandidates() {
         )
       `);
       console.log('✅ Default Calon Ketua OSIS seeded successfully!');
+    } else {
+      // Ensure photos are set if currently empty or null
+      await runDb(`UPDATE candidates SET photo = '/uploads/candidates/paslon1.jpg' WHERE candidate_number = 1 AND (photo IS NULL OR photo = '')`);
+      await runDb(`UPDATE candidates SET photo = '/uploads/candidates/paslon2.jpg' WHERE candidate_number = 2 AND (photo IS NULL OR photo = '')`);
     }
   } catch (err) {
     console.error('Error in ensureDefaultCandidates:', err.message);
