@@ -241,10 +241,10 @@ body::after {
   transform: none;
 }
 
-/* Candidate Grid */
+/* Candidate Grid (Always 2 columns side-by-side) */
 .candidate-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 24px;
   margin-bottom: 28px;
 }
@@ -530,4 +530,52 @@ body::after {
   background: linear-gradient(90deg, #6366f1, #3b82f6);
   border-radius: 20px;
   transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Responsive Side-by-Side Mobile Layout for Bilik Suara */
+@media (max-width: 640px) {
+  .app-container {
+    padding: 0 4px;
+  }
+  .candidate-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+  .candidate-image-wrapper {
+    height: 210px !important;
+  }
+  .candidate-card {
+    border-radius: 16px !important;
+  }
+  .candidate-body {
+    padding: 12px !important;
+  }
+  .candidate-name {
+    font-size: 14px !important;
+  }
+  .motto-box {
+    padding: 6px 8px !important;
+    font-size: 10px !important;
+    margin: 8px 0 !important;
+  }
+  .section-label {
+    font-size: 10px !important;
+  }
+  .section-text {
+    font-size: 11px !important;
+  }
+  .candidate-footer {
+    padding: 10px 10px !important;
+  }
+  .btn-coblos {
+    padding: 10px 6px !important;
+    font-size: 11px !important;
+    border-radius: 10px !important;
+  }
+  .paslon-badge {
+    top: 8px !important;
+    left: 8px !important;
+    padding: 3px 8px !important;
+    font-size: 10px !important;
+  }
 }

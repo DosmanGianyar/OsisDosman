@@ -92,28 +92,30 @@ async function ensureDefaultCandidates() {
       if (useMysql) {
         await runDb(`
           INSERT INTO voting_sessions (id, title, description, start_time, end_time, status, created_by)
-          VALUES (1, 'Pemilihan Ketua & Wakil Ketua OSIS SMAN 1 Gianyar 2026/2027', 'Silakan tentukan hak suara Anda secara Langsung, Umum, Bebas, Rahasia, Jujur dan Adil.', '2026-09-01 00:00:00', '2026-09-30 23:59:59', 'active', 1)
+          VALUES (1, 'Pemilihan Ketua OSIS SMAN 1 Gianyar 2026/2027', 'Silakan tentukan hak suara Anda secara Langsung, Umum, Bebas, Rahasia, Jujur dan Adil.', '2026-09-01 00:00:00', '2026-09-30 23:59:59', 'active', 1)
         `);
       } else {
         await runDb(`
           INSERT INTO voting_sessions (id, title, description, start_time, end_time, status)
-          VALUES (1, 'Pemilihan Ketua & Wakil Ketua OSIS SMAN 1 Gianyar 2026/2027', 'Silakan tentukan hak suara Anda secara Langsung, Umum, Bebas, Rahasia, Jujur dan Adil.', '2026-09-01 00:00:00', '2026-09-30 23:59:59', 'active')
+          VALUES (1, 'Pemilihan Ketua OSIS SMAN 1 Gianyar 2026/2027', 'Silakan tentukan hak suara Anda secara Langsung, Umum, Bebas, Rahasia, Jujur dan Adil.', '2026-09-01 00:00:00', '2026-09-30 23:59:59', 'active')
         `);
       }
+    } else {
+      await runDb(`UPDATE voting_sessions SET title = 'Pemilihan Ketua OSIS SMAN 1 Gianyar 2026/2027' WHERE id = 1`);
     }
 
     // 2. Ensure candidates exist
     const rows = await queryDb(`SELECT count(*) as count FROM candidates`);
     const count = rows[0]?.count || 0;
     if (count === 0) {
-      console.log('🌱 Seeding default Paslon 01 & Paslon 02 into candidates table...');
+      console.log('🌱 Seeding default Calon 01 & Calon 02 into candidates table...');
       await runDb(`
         INSERT INTO candidates (id, voting_session_id, candidate_number, name, vice_name, motto, vision, mission, programs, photo)
         VALUES (
           1, 1, 1,
           'I Made Agus Sukarma',
-          'Ni Putu Ayu Lestari',
-          'Bersama Mewujudkan OSIS DOSMAN yang Inovatif, Kreatif, dan Berprestasi!',
+          NULL,
+          'Inovatif, Berintegritas, dan Berprestasi untuk OSIS DOSMAN!',
           'Mewujudkan OSIS SMAN 1 Gianyar yang berintegritas, responsif terhadap perkembangan teknologi, serta wadah utama aspirasi siswa.',
           '1. Meningkatkan kedisiplinan dan karakter kebangsaan siswa.\n2. Mengembangkan bakat akademik & non-akademik melalui kegiatan digital.\n3. Mengoptimalkan kolaborasi antar-ekstrakurikuler.',
           '1. DOSMAN E-Sports & Art Championship\n2. Gerakan Zero Plastic School\n3. Pentas Seni & Inovasi Digital',
@@ -124,16 +126,16 @@ async function ensureDefaultCandidates() {
         INSERT INTO candidates (id, voting_session_id, candidate_number, name, vice_name, motto, vision, mission, programs, photo)
         VALUES (
           2, 1, 2,
-          'I Kadek Yoga Pratama',
           'Ni Made Dewi Saraswati',
+          NULL,
           'Unggul dalam Karya, Santun dalam Bersikap, Sinergi untuk DOSMAN!',
           'Terwujudnya lingkungan sekolah yang harmonis, berwawasan lingkungan, dan berdaya saing di tingkat nasional.',
-          '1. Memperkuat rasa kekeluargaan antar-angkatan siswa SMAN 1 Gianyar.\n2. Membangun ruang literasi dan kewirausahaan muda.\n3. Menggalakkan aksi sosial peduli lingkungan.',
+          '1. Memperkuat rasa kekeluargaan antar-siswa SMAN 1 Gianyar.\n2. Membangun ruang literasi dan kewirausahaan muda.\n3. Menggalakkan aksi sosial peduli lingkungan.',
           '1. DOSMAN Youth Leader Camp\n2. Pojok Literasi & Mini Startup School\n3. Clean & Green DOSMAN Movement',
           '/uploads/candidates/paslon2.jpg'
         )
       `);
-      console.log('✅ Default Paslon candidates seeded successfully!');
+      console.log('✅ Default Calon Ketua OSIS seeded successfully!');
     }
   } catch (err) {
     console.error('Error in ensureDefaultCandidates:', err.message);

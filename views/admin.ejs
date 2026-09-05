@@ -83,30 +83,31 @@
       </div>
     </div>
 
-    <!-- Section 2: Form Pengelolaan Details 2 Paslon OSIS -->
+    <!-- Section 2: Form Pengelolaan Details 2 Calon Ketua OSIS -->
     <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-radius: 24px; padding: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
-      <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">Pengelolaan Detail Candidates Paslon</h2>
-      <p style="font-size: 13px; color: #64748b; margin-bottom: 28px;">Ubah foto, nama calon ketua &amp; wakil, motto, serta visi-misi 2 Paslon OSIS</p>
+      <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">Pengelolaan Detail Calon Ketua OSIS</h2>
+      <p style="font-size: 13px; color: #64748b; margin-bottom: 28px;">Ubah foto close-up, nama calon ketua OSIS, motto, serta visi &amp; misi 2 Calon</p>
 
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
         <% candidates.forEach(candidate => { %>
           <form action="/admin/candidate/update" method="POST" enctype="multipart/form-data" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 24px;">
             <input type="hidden" name="candidate_id" value="<%= candidate.id %>">
+            <input type="hidden" name="vice_name" value="">
 
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-              <span class="paslon-badge" style="position: static;">PASLON 0<%= candidate.candidate_number %></span>
+              <span class="paslon-badge" style="position: static;">CALON 0<%= candidate.candidate_number %></span>
               <span style="font-size: 12px; font-weight: 700; color: #64748b;">ID: <%= candidate.id %></span>
             </div>
 
             <div class="form-group" style="margin-bottom: 20px;">
-              <label class="form-label">Foto Candidate Paslon</label>
+              <label class="form-label">Foto Close-Up Calon Ketua OSIS</label>
               <% if (candidate.photo) { %>
-                <div style="margin-bottom: 10px; border-radius: 12px; overflow: hidden; height: 200px; background: #0f172a; border: 1px solid #cbd5e1;">
+                <div style="margin-bottom: 10px; border-radius: 12px; overflow: hidden; height: 220px; background: #0f172a; border: 1px solid #cbd5e1;">
                   <img src="<%= candidate.photo %>" alt="<%= candidate.name %>" style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
                 </div>
               <% } %>
               <input type="file" name="photo" accept="image/*" class="form-control" style="padding: 8px;">
-              <small style="font-size: 11px; color: #64748b; margin-top: 4px; display: block;">Upload foto baru untuk mengganti gambar Paslon 0<%= candidate.candidate_number %></small>
+              <small style="font-size: 11px; color: #64748b; margin-top: 4px; display: block;">Upload foto close-up baru untuk Calon 0<%= candidate.candidate_number %></small>
             </div>
 
             <div class="form-group">
@@ -115,22 +116,17 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label">Nama Calon Wakil Ketua OSIS</label>
-              <input type="text" name="vice_name" class="form-control" value="<%= candidate.vice_name || '' %>">
-            </div>
-
-            <div class="form-group">
               <label class="form-label">Motto Kampanye</label>
               <input type="text" name="motto" class="form-control" value="<%= candidate.motto || '' %>">
             </div>
 
             <div class="form-group">
-              <label class="form-label">Visi Paslon</label>
+              <label class="form-label">Visi Calon</label>
               <textarea name="vision" class="form-control" rows="2"><%= candidate.vision || '' %></textarea>
             </div>
 
             <div class="form-group">
-              <label class="form-label">Misi Paslon (Poin-poin)</label>
+              <label class="form-label">Misi Calon (Poin-poin)</label>
               <textarea name="mission" class="form-control" rows="3"><%= candidate.mission || '' %></textarea>
             </div>
 
@@ -140,7 +136,7 @@
             </div>
 
             <button type="submit" class="btn-primary" style="margin-top: 12px; font-size: 13px;">
-              💾 SIMPAN PERUBAHAN PASLON 0<%= candidate.candidate_number %>
+              💾 SIMPAN PERUBAHAN CALON 0<%= candidate.candidate_number %>
             </button>
           </form>
         <% }) %>
@@ -189,17 +185,16 @@
           <div>
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
               <span style="background: ${badgeBg}; color: ${badgeColor}; font-weight: 900; font-size: 13px; padding: 6px 14px; border-radius: 30px; letter-spacing: 0.5px;">
-                PASLON 0${c.candidate_number}
+                CALON 0${c.candidate_number}
               </span>
               <span style="font-size: 13px; font-weight: 700; color: #64748b;">
                 ${c.count.toLocaleString()} Suara Sah
               </span>
             </div>
 
-            <h3 style="font-size: 18px; font-weight: 900; color: #0f172a; margin-bottom: 4px; line-height: 1.3;">
+            <h3 style="font-size: 18px; font-weight: 900; color: #0f172a; margin-bottom: 16px; line-height: 1.3;">
               ${c.name}
             </h3>
-            ${c.vice_name ? `<p style="font-size: 14px; font-weight: 700; color: #475569; margin-bottom: 20px;">&amp; ${c.vice_name}</p>` : ''}
           </div>
 
           <div>
