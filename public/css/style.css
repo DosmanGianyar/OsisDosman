@@ -271,13 +271,23 @@ body::after {
 
 .candidate-image-wrapper {
   position: relative;
-  width: 100%;
+  width: calc(100% - 32px);
+  max-width: 260px;
   aspect-ratio: 3 / 4;
   height: auto;
-  max-height: 310px;
+  margin: 20px auto 8px auto;
   background: #0f172a;
   overflow: hidden;
+  border-radius: 20px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+  border: 3px solid #ffffff;
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.candidate-card:hover .candidate-image-wrapper {
+  transform: scale(1.03);
+  box-shadow: 0 16px 36px rgba(99, 102, 241, 0.3);
 }
 
 .candidate-image {
@@ -546,9 +556,13 @@ body::after {
     gap: 10px !important;
   }
   .candidate-image-wrapper {
+    width: calc(100% - 16px) !important;
+    max-width: 150px !important;
     aspect-ratio: 3 / 4 !important;
     height: auto !important;
-    max-height: 200px !important;
+    margin: 10px auto 6px auto !important;
+    border-radius: 14px !important;
+    border: 2px solid #ffffff !important;
   }
   .candidate-card {
     border-radius: 16px !important;
