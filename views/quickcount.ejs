@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Live Count Perolehan Suara — E-Voting OSIS SMAN 1 Gianyar</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 
@@ -14,7 +14,7 @@
     <header class="app-header">
       <div class="brand-section">
         <div class="brand-logo">
-          <img src="assets/logo_dosman.jpg" alt="Logo SMAN 1 Gianyar">
+          <img src="/assets/logo_dosman.jpg" alt="Logo SMAN 1 Gianyar">
         </div>
         <div>
           <h1 class="brand-title">LIVE COUNT E-VOTING OSIS</h1>
@@ -27,7 +27,7 @@
           <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; animation: spin 1s infinite alternate;"></span>
           LIVE UPDATES (<span id="liveTimestamp">Updating...</span>)
         </div>
-        <a href="login" class="btn-primary" style="padding: 8px 18px; border-radius: 20px; text-decoration: none; font-size: 12px; font-weight: 800; background: linear-gradient(135deg, #6366f1, #3b82f6); color: white;">
+        <a href="/login" class="btn-primary" style="padding: 8px 18px; border-radius: 20px; text-decoration: none; font-size: 12px; font-weight: 800; background: linear-gradient(135deg, #6366f1, #3b82f6); color: white;">
           🔑 MASUK BILIK SUARA
         </a>
       </div>
@@ -178,19 +178,19 @@
 
     // Connect via SSE (Server-Sent Events) or Fallback Fetch Polling
     if (!!window.EventSource) {
-      const source = new EventSource('admin/realtime-sse');
+      const source = new EventSource('/admin/realtime-sse');
       source.onmessage = function(event) {
         const data = JSON.parse(event.data);
         updateTallyUI(data);
       };
       source.onerror = function() {
         setInterval(() => {
-          fetch('admin/realtime-json').then(r => r.json()).then(updateTallyUI);
+          fetch('/admin/realtime-json').then(r => r.json()).then(updateTallyUI);
         }, 2000);
       };
     } else {
       setInterval(() => {
-        fetch('admin/realtime-json').then(r => r.json()).then(updateTallyUI);
+        fetch('/admin/realtime-json').then(r => r.json()).then(updateTallyUI);
       }, 2000);
     }
   </script>

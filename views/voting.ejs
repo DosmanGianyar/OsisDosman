@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bilik Suara E-Voting OSIS — SMAN 1 Gianyar</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 
@@ -14,7 +14,7 @@
     <header class="app-header">
       <div class="brand-section">
         <div class="brand-logo">
-          <img src="assets/logo_dosman.jpg" alt="Logo SMAN 1 Gianyar">
+          <img src="/assets/logo_dosman.jpg" alt="Logo SMAN 1 Gianyar">
         </div>
         <div>
           <h1 class="brand-title">E-VOTING OSIS</h1>
@@ -25,7 +25,7 @@
       <div class="user-badge">
         <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span>
         <%= user.name %> (<%= user.role.toUpperCase() %>)
-        <a href="logout" style="color: rgba(255,255,255,0.7); text-decoration: none; margin-left: 8px; font-size: 11px;">Logout</a>
+        <a href="/logout" style="color: rgba(255,255,255,0.7); text-decoration: none; margin-left: 8px; font-size: 11px;">Logout</a>
       </div>
     </header>
 
@@ -45,7 +45,7 @@
     <% } %>
 
     <!-- Form Voting Form -->
-    <form id="voteForm" action="voting/vote" method="POST">
+    <form id="voteForm" action="/voting/vote" method="POST">
       <input type="hidden" name="candidate_id" id="selectedCandidateId" value="">
 
       <!-- Grid 2 Paslon OSIS -->
