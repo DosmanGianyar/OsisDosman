@@ -271,7 +271,10 @@ body::after {
 
 .candidate-image-wrapper {
   position: relative;
-  height: 380px;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  height: auto;
+  max-height: 420px;
   background: #0f172a;
   overflow: hidden;
 }
@@ -280,7 +283,7 @@ body::after {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: top;
+  object-position: center top;
   transition: transform 0.5s ease;
 }
 
@@ -542,7 +545,9 @@ body::after {
     gap: 10px !important;
   }
   .candidate-image-wrapper {
-    height: 210px !important;
+    aspect-ratio: 3 / 4 !important;
+    height: auto !important;
+    max-height: 260px !important;
   }
   .candidate-card {
     border-radius: 16px !important;
@@ -578,4 +583,34 @@ body::after {
     padding: 3px 8px !important;
     font-size: 10px !important;
   }
+}
+
+/* Button Toggle Detail Visi & Misi */
+.btn-toggle-details {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-toggle-details:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+.candidate-details-collapsible {
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }

@@ -74,20 +74,29 @@
                 <div class="motto-box">"<%= candidate.motto %>"</div>
               <% } %>
 
-              <% if (candidate.vision) { %>
-                <div class="section-label">Visi Calon</div>
-                <div class="section-text"><%= candidate.vision %></div>
-              <% } %>
+              <!-- Tombol Toggle Tampilkan / Sembunyikan Detail -->
+              <button type="button" class="btn-toggle-details" onclick="toggleCandidateDetails(event, <%= candidate.candidate_number %>)">
+                <span id="toggleIcon-<%= candidate.candidate_number %>">📋</span>
+                <span id="toggleText-<%= candidate.candidate_number %>">Tampilkan Detail Visi &amp; Misi</span>
+              </button>
 
-              <% if (candidate.mission) { %>
-                <div class="section-label">Misi Calon</div>
-                <div class="section-text"><%= candidate.mission %></div>
-              <% } %>
+              <!-- Container Detail Tersembunyi (Collapsible) -->
+              <div id="candidateDetails-<%= candidate.candidate_number %>" class="candidate-details-collapsible" style="display: none; margin-top: 12px;">
+                <% if (candidate.vision) { %>
+                  <div class="section-label">Visi Calon</div>
+                  <div class="section-text"><%= candidate.vision %></div>
+                <% } %>
 
-              <% if (candidate.programs) { %>
-                <div class="section-label" style="color: #d97706;">Program Kerja Unggulan</div>
-                <div class="section-text" style="background: #fffbeb; padding: 10px; border-radius: 8px; border: 1px solid #fef3c7;"><%= candidate.programs %></div>
-              <% } %>
+                <% if (candidate.mission) { %>
+                  <div class="section-label">Misi Calon</div>
+                  <div class="section-text"><%= candidate.mission %></div>
+                <% } %>
+
+                <% if (candidate.programs) { %>
+                  <div class="section-label" style="color: #d97706;">Program Kerja Unggulan</div>
+                  <div class="section-text" style="background: #fffbeb; padding: 10px; border-radius: 8px; border: 1px solid #fef3c7;"><%= candidate.programs %></div>
+                <% } %>
+              </div>
             </div>
 
             <div class="candidate-footer">
@@ -150,6 +159,23 @@
 
   <script>
     let isSubmitting = false;
+
+    function toggleCandidateDetails(event, candidateNumber) {
+      event.stopPropagation(); // Stop card click selection
+      const detailsDiv = document.getElementById('candidateDetails-' + candidateNumber);
+      const toggleText = document.getElementById('toggleText-' + candidateNumber);
+      const toggleIcon = document.getElementById('toggleIcon-' + candidateNumber);
+
+      if (detailsDiv.style.display === 'none' || detailsDiv.style.display === '') {
+        detailsDiv.style.display = 'block';
+        toggleText.textContent = 'Sembunyikan Detail';
+        toggleIcon.textContent = '🙈';
+      } else {
+        detailsDiv.style.display = 'none';
+        toggleText.textContent = 'Tampilkan Detail Visi & Misi';
+        toggleIcon.textContent = '📋';
+      }
+    }
 
     function triggerCandidateSelection(candidateId, badgeText, name) {
       if (isSubmitting) return;
