@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard & Real-Time Tally — E-Voting OSIS</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- Header Navbar -->
+    <header class="app-header">
+      <div class="brand-section">
+        <div class="brand-logo">📊</div>
+        <div>
+          <h1 class="brand-title">ADMINISTRATOR E-VOTING</h1>
+          <p class="brand-subtitle">Pemantauan Suara Real-Time &amp; Pengelolaan Paslon OSIS</p>
+        </div>
+      </div>
+
+      <div class="user-badge" style="display: flex; align-items: center; gap: 12px;">
+        <span style="width: 8px; height: 8px; border-radius: 50%; background: #3b82f6;"></span>
+        <%= user.name %> (ADMIN)
+        <button type="button" onclick="openResetModal()" style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s ease;">
+          ⚠️ RESET SUARA
+        </button>
+        <a href="/logout" style="color: rgba(255,255,255,0.7); text-decoration: none; font-size: 11px;">Logout</a>
+      </div>
+    </header>
+
+    <% if (success) { %>
+      <div class="alert-banner alert-success">✓ <%= success %></div>
+    <% } %>
+    <% if (error) { %>
+      <div class="alert-banner alert-error">⚠️ <%= error %></div>
+    <% } %>
+
+    <!-- Section 1: Real-Time Live Tally Counts -->
+    <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-radius: 24px; padding: 32px; margin-bottom: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+        <div>
+          <h2 style="font-size: 20px; font-weight: 800; color: #0f172a;">Hitung Suara Real-Time (Live Count)</h2>
+          <p style="font-size: 13px; color: #64748b;">Perhitungan suara sah terverifikasi diperbarui secara langsung</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 6px 14px; border-radius: 40px; color: #059669; font-size: 12px; font-weight: 700;">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; animation: spin 1s infinite alternate;"></span>
+          LIVE UPDATES (<span id="liveTimestamp">Updating...</span>)
+        </div>
+      </div>
+
+      <!-- Quick Stats Widgets -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px;">
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; text-align: center;">
+          <p style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Total DPT Siswa</p>
+          <p id="statTotalVoters" style="font-size: 28px; font-weight: 900; color: #0f172a; margin-top: 4px;">—</p>
+        </div>
+        <div style="background: #e0e7ff; border: 1px solid #c7d2fe; border-radius: 16px; padding: 20px; text-align: center;">
+          <p style="font-size: 11px; font-weight: 700; color: #4338ca; text-transform: uppercase;">Total Suara Masuk</p>
+          <p id="statTotalVotes" style="font-size: 28px; font-weight: 900; color: #4f46e5; margin-top: 4px;">—</p>
+        </div>
+        <div style="background: #d1fae5; border: 1px solid #a7f3d0; border-radius: 16px; padding: 20px; text-align: center;">
+          <p style="font-size: 11px; font-weight: 700; color: #047857; text-transform: uppercase;">Persentase Kehadiran</p>
+          <p id="statTurnoutPercent" style="font-size: 28px; font-weight: 900; color: #10b981; margin-top: 4px;">—%</p>
+        </div>
+        <div style="background: #fef3c7; border: 1px solid #fde68a; border-radius: 16px; padding: 20px; text-align: center;">
+          <p style="font-size: 11px; font-weight: 700; color: #b45309; text-transform: uppercase;">Sisa Belum Memilih</p>
+          <p id="statRemainingVoters" style="font-size: 28px; font-weight: 900; color: #d97706; margin-top: 4px;">—</p>
+        </div>
+      </div>
+
+      <!-- Grid Kanan Kiri Live Count Paslon 01 & Paslon 02 -->
+      <div id="paslonGridContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 12px;">
+        <!-- Filled dynamically side-by-side (Kanan Kiri) -->
+      </div>
+
+      <!-- Total Perolehan Suara Abstain (Di Bawahnya) -->
+      <div id="summaryTallyContainer">
+        <!-- Filled dynamically underneath -->
+      </div>
+    </div>
+
+    <!-- Section 2: Form Pengelolaan Details 2 Paslon OSIS -->
+    <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-radius: 24px; padding: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+      <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">Pengelolaan Detail Candidates Paslon</h2>
+      <p style="font-size: 13px; color: #64748b; margin-bottom: 28px;">Ubah foto, nama calon ketua &amp; wakil, motto, serta visi-misi 2 Paslon OSIS</p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+        <% candidates.forEach(candidate => { %>
+          <form action="/admin/candidate/update" method="POST" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 24px;">
+            <input type="hidden" name="candidate_id" value="<%= candidate.id %>">
+
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+              <span class="paslon-badge" style="position: static;">PASLON 0<%= candidate.candidate_number %></span>
+              <span style="font-size: 12px; font-weight: 700; color: #64748b;">ID: <%= candidate.id %></span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Nama Calon Ketua OSIS</label>
+              <input type="text" name="name" class="form-control" value="<%= candidate.name %>" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Nama Calon Wakil Ketua OSIS</label>
+              <input type="text" name="vice_name" class="form-control" value="<%= candidate.vice_name || '' %>">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Motto Kampanye</label>
+              <input type="text" name="motto" class="form-control" value="<%= candidate.motto || '' %>">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Visi Paslon</label>
+              <textarea name="vision" class="form-control" rows="2"><%= candidate.vision || '' %></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Misi Paslon (Poin-poin)</label>
+              <textarea name="mission" class="form-control" rows="3"><%= candidate.mission || '' %></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Program Kerja Unggulan</label>
+              <textarea name="programs" class="form-control" rows="3"><%= candidate.programs || '' %></textarea>
+            </div>
+
+            <button type="submit" class="btn-primary" style="margin-top: 12px; font-size: 13px;">
+              SIMPAN PERUBAHAN PASLON 0<%= candidate.candidate_number %>
+            </button>
+          </form>
+        <% }) %>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Real-time SSE / Polling Script -->
+  <script>
+    function updateTallyUI(data) {
+      document.getElementById('statTotalVoters').textContent = data.total_voters.toLocaleString();
+      document.getElementById('statTotalVotes').textContent = data.total_votes.toLocaleString();
+      document.getElementById('statTurnoutPercent').textContent = data.turnout_percent + '%';
+      document.getElementById('statRemainingVoters').textContent = data.remaining_voters.toLocaleString();
+      document.getElementById('liveTimestamp').textContent = new Date().toLocaleTimeString('id-ID');
+
+      const paslonGrid = document.getElementById('paslonGridContainer');
+      const summaryContainer = document.getElementById('summaryTallyContainer');
+
+      paslonGrid.innerHTML = '';
+      summaryContainer.innerHTML = '';
+
+      // Render Paslon 01 & Paslon 02 side-by-side (Kanan Kiri)
+      data.candidates.forEach(c => {
+        const card = document.createElement('div');
+        const isPaslon1 = c.candidate_number === 1;
+
+        card.style.background = isPaslon1 ? '#fffdf5' : '#f6f8ff';
+        card.style.border = isPaslon1 ? '2px solid #fde68a' : '2px solid #c7d2fe';
+        card.style.borderRadius = '20px';
+        card.style.padding = '24px';
+        card.style.boxShadow = '0 10px 25px rgba(0,0,0,0.03)';
+        card.style.display = 'flex';
+        card.style.flexDirection = 'column';
+        card.style.justifyContent = 'space-between';
+
+        const colorGradient = isPaslon1 
+          ? 'linear-gradient(90deg, #f59e0b, #d97706)' 
+          : 'linear-gradient(90deg, #6366f1, #3b82f6)';
+
+        const badgeBg = isPaslon1 ? '#fef3c7' : '#e0e7ff';
+        const badgeColor = isPaslon1 ? '#b45309' : '#4338ca';
+
+        card.innerHTML = `
+          <div>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+              <span style="background: ${badgeBg}; color: ${badgeColor}; font-weight: 900; font-size: 13px; padding: 6px 14px; border-radius: 30px; letter-spacing: 0.5px;">
+                PASLON 0${c.candidate_number}
+              </span>
+              <span style="font-size: 13px; font-weight: 700; color: #64748b;">
+                ${c.count.toLocaleString()} Suara Sah
+              </span>
+            </div>
+
+            <h3 style="font-size: 18px; font-weight: 900; color: #0f172a; margin-bottom: 4px; line-height: 1.3;">
+              ${c.name}
+            </h3>
+            ${c.vice_name ? `<p style="font-size: 14px; font-weight: 700; color: #475569; margin-bottom: 20px;">&amp; ${c.vice_name}</p>` : ''}
+          </div>
+
+          <div>
+            <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 8px;">
+              <span style="font-size: 32px; font-weight: 900; color: #0f172a;">${c.percentage}%</span>
+              <span style="font-size: 12px; color: #64748b; font-weight: 600;">Perolehan Suara</span>
+            </div>
+            <div class="progress-bar-bg" style="height: 14px; border-radius: 10px; background: #e2e8f0; overflow: hidden;">
+              <div class="progress-bar-fill" style="width: ${c.percentage}%; height: 100%; background: ${colorGradient}; border-radius: 10px; transition: width 0.6s ease;"></div>
+            </div>
+          </div>
+        `;
+        paslonGrid.appendChild(card);
+      });
+
+      // Render Abstain Card (Di Bawahnya)
+      if (data.abstain) {
+        const summaryCard = document.createElement('div');
+        summaryCard.style.background = '#f8fafc';
+        summaryCard.style.border = '1px solid #cbd5e1';
+        summaryCard.style.borderRadius = '20px';
+        summaryCard.style.padding = '20px 24px';
+        summaryCard.style.marginTop = '8px';
+
+        summaryCard.innerHTML = `
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="background: #e2e8f0; color: #475569; font-weight: 900; font-size: 12px; padding: 4px 12px; border-radius: 20px;">
+                TIDAK MEMILIH
+              </span>
+              <span style="font-size: 14px; font-weight: 800; color: #334155;">Suara Abstain</span>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: 22px; font-weight: 900; color: #475569;">${data.abstain.percentage}%</span>
+              <span style="font-size: 13px; color: #64748b; margin-left: 8px; font-weight: 700;">(${data.abstain.count.toLocaleString()} suara)</span>
+            </div>
+          </div>
+          <div class="progress-bar-bg" style="height: 10px; border-radius: 8px; background: #e2e8f0; overflow: hidden;">
+            <div class="progress-bar-fill" style="width: ${data.abstain.percentage}%; height: 100%; background: #64748b; border-radius: 8px; transition: width 0.6s ease;"></div>
+          </div>
+        `;
+        summaryContainer.appendChild(summaryCard);
+      }
+    }
+
+    // Connect via SSE (Server-Sent Events) or Fallback Fetch Polling
+    if (!!window.EventSource) {
+      const source = new EventSource('/admin/realtime-sse');
+      source.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        updateTallyUI(data);
+      };
+      source.onerror = function() {
+        // Fallback polling
+        setInterval(() => {
+          fetch('/admin/realtime-json').then(r => r.json()).then(updateTallyUI);
+        }, 2000);
+      };
+    } else {
+      setInterval(() => {
+        fetch('/admin/realtime-json').then(r => r.json()).then(updateTallyUI);
+      }, 2000);
+    }
+  </script>
+
+  <!-- Modal Reset Confirmation -->
+  <div id="resetModal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 480px; text-align: center;">
+      <div style="width: 56px; height: 56px; background: #fee2e2; border-radius: 50%; color: #dc2626; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 16px auto;">
+        🔥
+      </div>
+      <h3 style="font-size: 20px; font-weight: 900; color: #991b1b; margin-bottom: 8px;">Reset Seluruh Suara Pemilihan?</h3>
+      <p style="font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom: 20px;">
+        Tindakan ini akan <strong>MENGHAPUS PERMANEN seluruh data suara</strong> yang sudah masuk. Pemilih/siswa yang sudah voting akan dapat memilih kembali.
+      </p>
+
+      <form action="/admin/reset-votes" method="POST" onsubmit="return validateResetForm()">
+        <div style="background: #fef2f2; border: 1px dashed #fca5a5; border-radius: 12px; padding: 16px; margin-bottom: 20px; text-align: left;">
+          <label style="font-size: 12px; font-weight: 700; color: #991b1b; display: block; margin-bottom: 8px;">
+            Ketik kata <span style="background: #fee2e2; padding: 2px 8px; border-radius: 4px; font-family: monospace; letter-spacing: 1px; color: #b91c1c;">DOSMAN</span> untuk mengonfirmasi:
+          </label>
+          <input type="text" id="resetConfirmationInput" name="confirmation" class="form-control" placeholder="Ketik DOSMAN di sini" autocomplete="off" style="text-transform: uppercase; font-weight: 800; letter-spacing: 2px; border-color: #fca5a5; text-align: center;">
+        </div>
+
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+          <button type="button" onclick="closeResetModal()" class="btn-primary" style="background: #e2e8f0; color: #475569; border: none;">
+            BATAL
+          </button>
+          <button type="submit" id="btnConfirmReset" disabled class="btn-primary" style="background: #dc2626; color: white; opacity: 0.5; cursor: not-allowed; border: none;">
+            🔥 YA, RESET SEKARANG
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function openResetModal() {
+      document.getElementById('resetModal').classList.add('active');
+      const input = document.getElementById('resetConfirmationInput');
+      input.value = '';
+      const btn = document.getElementById('btnConfirmReset');
+      btn.disabled = true;
+      btn.style.opacity = '0.5';
+      btn.style.cursor = 'not-allowed';
+      setTimeout(() => input.focus(), 100);
+    }
+
+    function closeResetModal() {
+      document.getElementById('resetModal').classList.remove('active');
+    }
+
+    const resetInput = document.getElementById('resetConfirmationInput');
+    if (resetInput) {
+      resetInput.addEventListener('input', function(e) {
+        const btn = document.getElementById('btnConfirmReset');
+        if (e.target.value.trim().toUpperCase() === 'DOSMAN') {
+          btn.disabled = false;
+          btn.style.opacity = '1';
+          btn.style.cursor = 'pointer';
+        } else {
+          btn.disabled = true;
+          btn.style.opacity = '0.5';
+          btn.style.cursor = 'not-allowed';
+        }
+      });
+    }
+
+    function validateResetForm() {
+      const input = document.getElementById('resetConfirmationInput').value.trim().toUpperCase();
+      if (input !== 'DOSMAN') {
+        alert('Kata konfirmasi harus DOSMAN!');
+        return false;
+      }
+      return true;
+    }
+  </script>
+
+</body>
+</html>

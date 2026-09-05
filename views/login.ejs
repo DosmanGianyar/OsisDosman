@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Pemilihan OSIS — SMAN 1 Gianyar</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <div class="app-container" style="display: flex; align-items: center; justify-content: center; min-height: 90vh;">
+    <div class="login-card">
+      <div style="margin-bottom: 24px;">
+        <div class="brand-logo" style="margin: 0 auto 12px auto; width: 64px; height: 64px; font-size: 32px;">🗳️</div>
+        <h1 style="font-size: 24px; font-weight: 800; color: #0f172a;">E-VOTING OSIS</h1>
+        <p style="font-size: 13px; color: #64748b; margin-top: 4px;">SMA Negeri 1 Gianyar &middot; Widya Wahana Bhakti</p>
+      </div>
+
+      <% if (success) { %>
+        <div class="alert-banner alert-success">
+          <svg style="width: 20px; height: 20px; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div><%= success %></div>
+        </div>
+      <% } %>
+
+      <% if (error) { %>
+        <div class="alert-banner alert-error">
+          <svg style="width: 20px; height: 20px; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div><%= error %></div>
+        </div>
+      <% } %>
+
+      <form action="/login" method="POST">
+        <div class="form-group">
+          <label class="form-label">NISN (Siswa) / Email (Admin)</label>
+          <input type="text" name="username" class="form-control" placeholder="Masukkan NISN atau Email Anda" required autofocus autocomplete="off">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" name="password" class="form-control" placeholder="Masukkan Password" required>
+        </div>
+
+        <button type="submit" class="btn-primary" style="margin-top: 10px;">
+          MASUK BILIK SUARA
+        </button>
+      </form>
+
+      <div style="margin-top: 28px; border-top: 1px solid #e2e8f0; padding-top: 16px; font-size: 11px; color: #94a3b8;">
+        &copy; 2026 SMAN 1 Gianyar &middot; E-Voting OSIS Digital System
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Auto dismiss alert banner after 3 seconds to maintain voting secrecy for the next student
+    document.addEventListener('DOMContentLoaded', () => {
+      const alertBanners = document.querySelectorAll('.alert-banner');
+      if (alertBanners.length > 0) {
+        setTimeout(() => {
+          alertBanners.forEach(banner => {
+            banner.style.transition = 'opacity 0.5s ease, transform 0.5s ease, max-height 0.5s ease, margin 0.5s ease, padding 0.5s ease';
+            banner.style.opacity = '0';
+            banner.style.transform = 'translateY(-10px)';
+            banner.style.maxHeight = '0';
+            banner.style.margin = '0';
+            banner.style.padding = '0';
+            banner.style.overflow = 'hidden';
+            setTimeout(() => banner.remove(), 500);
+          });
+        }, 3000);
+      }
+    });
+  </script>
+</body>
+</html>

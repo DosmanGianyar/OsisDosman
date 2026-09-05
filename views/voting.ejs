@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bilik Suara E-Voting OSIS — SMAN 1 Gianyar</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- Header Navbar -->
+    <header class="app-header">
+      <div class="brand-section">
+        <div class="brand-logo">🗳️</div>
+        <div>
+          <h1 class="brand-title">E-VOTING OSIS</h1>
+          <p class="brand-subtitle">SMA Negeri 1 Gianyar &middot; LUBER JURDIL</p>
+        </div>
+      </div>
+
+      <div class="user-badge">
+        <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span>
+        <%= user.name %> (<%= user.role.toUpperCase() %>)
+        <a href="/logout" style="color: rgba(255,255,255,0.7); text-decoration: none; margin-left: 8px; font-size: 11px;">Logout</a>
+      </div>
+    </header>
+
+    <!-- Banner Session -->
+    <div style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 24px; color: #fff; margin-bottom: 24px;">
+      <h2 style="font-size: 22px; font-weight: 800;"><%= session.title %></h2>
+      <p style="font-size: 13px; color: rgba(255,255,255,0.8); margin-top: 6px;"><%= session.description %></p>
+    </div>
+
+    <% if (error) { %>
+      <div class="alert-banner alert-error">
+        <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <div><%= error %></div>
+      </div>
+    <% } %>
+
+    <!-- Form Voting Form -->
+    <form id="voteForm" action="/voting/vote" method="POST">
+      <input type="hidden" name="candidate_id" id="selectedCandidateId" value="">
+
+      <!-- Grid 2 Paslon OSIS -->
+      <div class="candidate-grid">
+        <% candidates.forEach(candidate => { %>
+          <div class="candidate-card" onclick="triggerCandidateSelection(<%= candidate.id %>, 'PASLON 0<%= candidate.candidate_number %>', '<%= candidate.name %>', '<%= candidate.vice_name || '' %>')">
+            
+            <div class="candidate-image-wrapper">
+              <span class="paslon-badge">PASLON 0<%= candidate.candidate_number %></span>
+              <% if (candidate.photo) { %>
+                <img src="<%= candidate.photo %>" alt="<%= candidate.name %>" class="candidate-image">
+              <% } else { %>
+                <div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8;">
+                  <svg style="width: 64px; height: 64px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                  </svg>
+                  <span style="font-size: 12px; margin-top: 8px;">Foto Resmi Paslon 0<%= candidate.candidate_number %></span>
+                </div>
+              <% } %>
+            </div>
+
+            <div class="candidate-body">
+              <h3 class="candidate-name"><%= candidate.name %></h3>
+              <% if (candidate.vice_name) { %>
+                <p class="candidate-vice">&amp; <%= candidate.vice_name %></p>
+              <% } %>
+
+              <% if (candidate.motto) { %>
+                <div class="motto-box">"<%= candidate.motto %>"</div>
+              <% } %>
+
+              <% if (candidate.vision) { %>
+                <div class="section-label">Visi Paslon</div>
+                <div class="section-text"><%= candidate.vision %></div>
+              <% } %>
+
+              <% if (candidate.mission) { %>
+                <div class="section-label">Misi Paslon</div>
+                <div class="section-text"><%= candidate.mission %></div>
+              <% } %>
+
+              <% if (candidate.programs) { %>
+                <div class="section-label" style="color: #d97706;">Program Kerja Unggulan</div>
+                <div class="section-text" style="background: #fffbeb; padding: 10px; border-radius: 8px; border: 1px solid #fef3c7;"><%= candidate.programs %></div>
+              <% } %>
+            </div>
+
+            <div class="candidate-footer">
+              <button type="button" class="btn-coblos">
+                <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                COBLOS PASLON 0<%= candidate.candidate_number %>
+              </button>
+            </div>
+
+          </div>
+        <% }) %>
+      </div>
+
+      <!-- Opsi Tidak Memilih (Abstain) -->
+      <div class="abstain-card">
+        <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 6px;">Opsi Tidak Memilih (Abstain)</h3>
+        <p style="font-size: 13px; color: rgba(255,255,255,0.7); max-width: 500px; margin: 0 auto;">
+          Jika Anda memilih untuk tidak menyalurkan suara pada salah satu pasangan calon di atas.
+        </p>
+        <button type="button" class="btn-abstain" onclick="triggerAbstainSelection()">
+          ∅ PILIH TIDAK MEMILIH (ABSTAIN)
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+
+  <!-- Modal Konfirmasi Ballot -->
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal-box">
+      <div style="width: 56px; height: 56px; border-radius: 50%; background: #e0e7ff; color: #4f46e5; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; font-size: 28px;">
+        🗳️
+      </div>
+
+      <h3 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">Konfirmasi Pilihan Suara</h3>
+      <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">Apakah Anda yakin dengan pilihan Anda?</p>
+
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; margin-bottom: 20px;">
+        <span id="modalPaslonBadge" class="paslon-badge" style="position: static; display: inline-block; margin-bottom: 8px;">PASLON 01</span>
+        <h4 id="modalPaslonName" style="font-size: 16px; font-weight: 800; color: #0f172a;">—</h4>
+        <p id="modalPaslonVice" style="font-size: 13px; font-weight: 700; color: #4f46e5; margin-top: 2px;">—</p>
+      </div>
+
+      <p style="font-size: 11px; color: #94a3b8; margin-bottom: 20px; line-height: 1.5;">
+        ⚠️ Pilihan bersifat <strong style="color: #0f172a;">RAHASIA</strong> &amp; <strong style="color: #0f172a;">FINAL</strong>.<br>
+        Setelah dikirim, Anda akan <strong style="color: #f43f5e;">otomatis keluar dari sistem (logout)</strong>.
+      </p>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-modal-cancel" id="btnCancelModal" onclick="closeModal()">Batal / Cek Lagi</button>
+        <button type="button" class="btn-modal-confirm" id="btnConfirmSubmit" onclick="executeSubmitVote()">
+          <span>SAH! KIRIM SUARA</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let isSubmitting = false;
+
+    function triggerCandidateSelection(candidateId, badgeText, name, viceName) {
+      if (isSubmitting) return;
+      document.getElementById('selectedCandidateId').value = candidateId;
+      document.getElementById('modalPaslonBadge').textContent = badgeText;
+      document.getElementById('modalPaslonName').textContent = name;
+      document.getElementById('modalPaslonVice').textContent = viceName ? '& ' + viceName : '';
+      openModal();
+    }
+
+    function triggerAbstainSelection() {
+      if (isSubmitting) return;
+      document.getElementById('selectedCandidateId').value = 'abstain';
+      document.getElementById('modalPaslonBadge').textContent = 'TIDAK MEMILIH';
+      document.getElementById('modalPaslonBadge').style.background = '#475569';
+      document.getElementById('modalPaslonName').textContent = 'Opsi Abstain (Golput)';
+      document.getElementById('modalPaslonVice').textContent = 'Anda memilih untuk tidak memilih calon manapun';
+      openModal();
+    }
+
+    function openModal() {
+      document.getElementById('confirmModal').classList.add('active');
+    }
+
+    function closeModal() {
+      if (isSubmitting) return;
+      document.getElementById('confirmModal').classList.remove('active');
+    }
+
+    function executeSubmitVote() {
+      if (isSubmitting) return;
+      isSubmitting = true;
+
+      const confirmBtn = document.getElementById('btnConfirmSubmit');
+      const cancelBtn = document.getElementById('btnCancelModal');
+
+      confirmBtn.disabled = true;
+      cancelBtn.disabled = true;
+      confirmBtn.style.opacity = '0.75';
+      confirmBtn.style.cursor = 'not-allowed';
+
+      confirmBtn.innerHTML = `
+        <div class="spinner"></div>
+        <span>MEMPROSES SUARA...</span>
+      `;
+
+      document.getElementById('voteForm').submit();
+    }
+  </script>
+
+</body>
+</html>
