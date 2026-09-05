@@ -1,0 +1,7 @@
+{
+  "serverUrl": "http://36.93.15.146:8080/login",
+  "kioskMode": true,
+  "fullscreen": true,
+  "allowExitShortcut": true,
+  "exitShortcut": "CommandOrControl+Shift+Q"
+}

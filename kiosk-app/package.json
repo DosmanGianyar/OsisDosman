@@ -1,0 +1,31 @@
+{
+  "name": "dosman-evoting-kiosk",
+  "version": "1.0.0",
+  "description": "Aplikasi Bilik Suara Kiosk E-Voting OSIS SMAN 1 Gianyar",
+  "main": "main.js",
+  "author": "DOSMAN Gianyar",
+  "license": "ISC",
+  "scripts": {
+    "start": "electron .",
+    "build:portable": "electron-builder --win portable",
+    "build:installer": "electron-builder --win nsis"
+  },
+  "build": {
+    "appId": "com.dosman.evoting.kiosk",
+    "productName": "Bilik Suara DOSMAN",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        "portable"
+      ],
+      "icon": "../public/assets/logo_dosman.jpg"
+    }
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8"
+  }
+}
