@@ -200,7 +200,7 @@ async function getRealtimeTallyData() {
   const voters = await queryDb(`SELECT count(*) as count FROM users WHERE role = 'siswa'`);
   const votes = await queryDb(`SELECT count(*) as count FROM votes`);
   const abstain = await queryDb(`SELECT count(*) as count FROM votes WHERE candidate_id IS NULL`);
-  const candidates = await queryDb(`SELECT id, candidate_number, name, vice_name FROM candidates ORDER BY candidate_number ASC`);
+  const candidates = await queryDb(`SELECT id, candidate_number, name, vice_name, photo FROM candidates ORDER BY candidate_number ASC`);
 
   const totalVoters = voters[0]?.count || 0;
   const totalVotes = votes[0]?.count || 0;
@@ -215,6 +215,7 @@ async function getRealtimeTallyData() {
       candidate_number: c.candidate_number,
       name: c.name,
       vice_name: c.vice_name,
+      photo: c.photo,
       count: count,
       percentage: percentage
     };
