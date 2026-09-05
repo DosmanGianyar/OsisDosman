@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Count Perolehan Suara — E-Voting OSIS SMAN 1 Gianyar</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <div class="app-container" style="max-width: 1140px;">
+
+    <!-- Header Navbar -->
+    <header class="app-header">
+      <div class="brand-section">
+        <div class="brand-logo">
+          <img src="/assets/logo_dosman.jpg" alt="Logo SMAN 1 Gianyar">
+        </div>
+        <div>
+          <h1 class="brand-title">LIVE COUNT E-VOTING OSIS</h1>
+          <p class="brand-subtitle">SMA Negeri 1 Gianyar &middot; Pemantauan Perolehan Suara Real-Time</p>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="display: flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 8px 16px; border-radius: 30px; color: #34d399; font-size: 12px; font-weight: 800;">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; animation: spin 1s infinite alternate;"></span>
+          LIVE UPDATES (<span id="liveTimestamp">Updating...</span>)
+        </div>
+        <a href="/login" class="btn-primary" style="padding: 8px 18px; border-radius: 20px; text-decoration: none; font-size: 12px; font-weight: 800; background: linear-gradient(135deg, #6366f1, #3b82f6); color: white;">
+          🔑 MASUK BILIK SUARA
+        </a>
+      </div>
+    </header>
+
+    <!-- Main Container Card -->
+    <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-radius: 24px; padding: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); margin-bottom: 32px;">
+      
+      <div style="text-align: center; margin-bottom: 28px;">
+        <h2 style="font-size: 24px; font-weight: 900; color: #0f172a;">PEROLEHAN SUARA PILKATOS REAL-TIME</h2>
+        <p style="font-size: 14px; color: #64748b; margin-top: 4px;">Data dihitung secara otomatis dan akurat langsung dari bilik suara digital</p>
+      </div>
+
+      <!-- Quick Stats Widgets (Top Grid) -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px;">
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 18px; padding: 20px; text-align: center;">
+          <p style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Total DPT Siswa</p>
+          <p id="statTotalVoters" style="font-size: 32px; font-weight: 900; color: #0f172a; margin-top: 4px;">—</p>
+        </div>
+        <div style="background: #e0e7ff; border: 1px solid #c7d2fe; border-radius: 18px; padding: 20px; text-align: center;">
+          <p style="font-size: 11px; font-weight: 800; color: #4338ca; text-transform: uppercase; letter-spacing: 0.5px;">Total Suara Masuk</p>
+          <p id="statTotalVotes" style="font-size: 32px; font-weight: 900; color: #4f46e5; margin-top: 4px;">—</p>
+        </div>
+        <div style="background: #d1fae5; border: 1px solid #a7f3d0; border-radius: 18px; padding: 20px; text-align: center;">
+          <p style="font-size: 11px; font-weight: 800; color: #047857; text-transform: uppercase; letter-spacing: 0.5px;">Persentase Kehadiran</p>
+          <p id="statTurnoutPercent" style="font-size: 32px; font-weight: 900; color: #10b981; margin-top: 4px;">—%</p>
+        </div>
+        <div style="background: #fef3c7; border: 1px solid #fde68a; border-radius: 18px; padding: 20px; text-align: center;">
+          <p style="font-size: 11px; font-weight: 800; color: #b45309; text-transform: uppercase; letter-spacing: 0.5px;">Sisa Belum Memilih</p>
+          <p id="statRemainingVoters" style="font-size: 32px; font-weight: 900; color: #d97706; margin-top: 4px;">—</p>
+        </div>
+      </div>
+
+      <!-- Grid Kanan-Kiri Paslon 01 & Paslon 02 -->
+      <div id="paslonGridContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 16px;">
+        <!-- Filled dynamically by SSE / Fetch -->
+      </div>
+
+      <!-- Total Perolehan Suara Abstain (Di Bawahnya) -->
+      <div id="summaryTallyContainer">
+        <!-- Filled dynamically underneath -->
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align: center; color: rgba(255,255,255,0.7); font-size: 12px; margin-bottom: 24px;">
+      &copy; 2026 SMAN 1 Gianyar &middot; Widya Wahana Bhakti &middot; E-Voting Digital System
+    </div>
+
+  </div>
+
+  <!-- Real-time SSE / Polling Script -->
+  <script>
+    function updateTallyUI(data) {
+      document.getElementById('statTotalVoters').textContent = data.total_voters.toLocaleString();
+      document.getElementById('statTotalVotes').textContent = data.total_votes.toLocaleString();
+      document.getElementById('statTurnoutPercent').textContent = data.turnout_percent + '%';
+      document.getElementById('statRemainingVoters').textContent = data.remaining_voters.toLocaleString();
+      document.getElementById('liveTimestamp').textContent = new Date().toLocaleTimeString('id-ID');
+
+      const paslonGrid = document.getElementById('paslonGridContainer');
+      const summaryContainer = document.getElementById('summaryTallyContainer');
+
+      paslonGrid.innerHTML = '';
+      summaryContainer.innerHTML = '';
+
+      // Render Paslon 01 & Paslon 02 side-by-side (Kanan Kiri)
+      data.candidates.forEach(c => {
+        const card = document.createElement('div');
+        const isPaslon1 = c.candidate_number === 1;
+
+        card.style.background = isPaslon1 ? '#fffdf5' : '#f6f8ff';
+        card.style.border = isPaslon1 ? '2px solid #fde68a' : '2px solid #c7d2fe';
+        card.style.borderRadius = '24px';
+        card.style.padding = '28px';
+        card.style.boxShadow = '0 10px 30px rgba(0,0,0,0.04)';
+        card.style.display = 'flex';
+        card.style.flexDirection = 'column';
+        card.style.justifyContent = 'space-between';
+
+        const colorGradient = isPaslon1 
+          ? 'linear-gradient(90deg, #f59e0b, #d97706)' 
+          : 'linear-gradient(90deg, #6366f1, #3b82f6)';
+
+        const badgeBg = isPaslon1 ? '#fef3c7' : '#e0e7ff';
+        const badgeColor = isPaslon1 ? '#b45309' : '#4338ca';
+
+        card.innerHTML = `
+          <div>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+              <span style="background: ${badgeBg}; color: ${badgeColor}; font-weight: 900; font-size: 14px; padding: 6px 16px; border-radius: 30px; letter-spacing: 0.5px;">
+                PASLON 0${c.candidate_number}
+              </span>
+              <span style="font-size: 14px; font-weight: 800; color: #475569;">
+                ${c.count.toLocaleString()} Suara Sah
+              </span>
+            </div>
+
+            <h3 style="font-size: 22px; font-weight: 900; color: #0f172a; margin-bottom: 4px; line-height: 1.3;">
+              ${c.name}
+            </h3>
+            ${c.vice_name ? `<p style="font-size: 16px; font-weight: 700; color: #475569; margin-bottom: 24px;">&amp; ${c.vice_name}</p>` : ''}
+          </div>
+
+          <div>
+            <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px;">
+              <span style="font-size: 40px; font-weight: 900; color: #0f172a;">${c.percentage}%</span>
+              <span style="font-size: 13px; color: #64748b; font-weight: 700;">Perolehan Suara</span>
+            </div>
+            <div class="progress-bar-bg" style="height: 16px; border-radius: 12px; background: #e2e8f0; overflow: hidden;">
+              <div class="progress-bar-fill" style="width: ${c.percentage}%; height: 100%; background: ${colorGradient}; border-radius: 12px; transition: width 0.6s ease;"></div>
+            </div>
+          </div>
+        `;
+        paslonGrid.appendChild(card);
+      });
+
+      // Render Abstain Card (Di Bawahnya)
+      if (data.abstain) {
+        const summaryCard = document.createElement('div');
+        summaryCard.style.background = '#f8fafc';
+        summaryCard.style.border = '1px solid #cbd5e1';
+        summaryCard.style.borderRadius = '20px';
+        summaryCard.style.padding = '20px 24px';
+        summaryCard.style.marginTop = '8px';
+
+        summaryCard.innerHTML = `
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="background: #e2e8f0; color: #475569; font-weight: 900; font-size: 12px; padding: 4px 12px; border-radius: 20px;">
+                TIDAK MEMILIH
+              </span>
+              <span style="font-size: 14px; font-weight: 800; color: #334155;">Suara Abstain</span>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: 24px; font-weight: 900; color: #475569;">${data.abstain.percentage}%</span>
+              <span style="font-size: 14px; color: #64748b; margin-left: 8px; font-weight: 700;">(${data.abstain.count.toLocaleString()} suara)</span>
+            </div>
+          </div>
+          <div class="progress-bar-bg" style="height: 12px; border-radius: 8px; background: #e2e8f0; overflow: hidden;">
+            <div class="progress-bar-fill" style="width: ${data.abstain.percentage}%; height: 100%; background: #64748b; border-radius: 8px; transition: width 0.6s ease;"></div>
+          </div>
+        `;
+        summaryContainer.appendChild(summaryCard);
+      }
+    }
+
+    // Connect via SSE (Server-Sent Events) or Fallback Fetch Polling
+    if (!!window.EventSource) {
+      const source = new EventSource('/admin/realtime-sse');
+      source.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        updateTallyUI(data);
+      };
+      source.onerror = function() {
+        setInterval(() => {
+          fetch('/admin/realtime-json').then(r => r.json()).then(updateTallyUI);
+        }, 2000);
+      };
+    } else {
+      setInterval(() => {
+        fetch('/admin/realtime-json').then(r => r.json()).then(updateTallyUI);
+      }, 2000);
+    }
+  </script>
+
+</body>
+</html>

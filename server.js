@@ -148,6 +148,17 @@ async function getRealtimeTallyData() {
 
 // ─── ROUTES ──────────────────────────────────────────────────────────────────
 
+// Public Real-Time Live Count Page (No login required)
+app.get('/quickcount', (req, res) => {
+  res.render('quickcount');
+});
+app.get('/livecount', (req, res) => {
+  res.render('quickcount');
+});
+app.get('/realtime', (req, res) => {
+  res.render('quickcount');
+});
+
 // Redirect Root to Login
 app.get('/', (req, res) => {
   if (req.session.user) {
