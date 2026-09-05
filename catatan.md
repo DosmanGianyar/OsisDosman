@@ -111,3 +111,18 @@ git push -u origin main
 - **URL Akses Publik:**
   - Public Live Count: `http://36.93.15.146:3000/quickcount` atau `http://36.93.15.146:8080/quickcount`
   - Login E-Voting: `http://36.93.15.146:3000/login` atau `http://36.93.15.146:8080/login`
+
+---
+
+## 8. Konfigurasi HTTPS (SSL / TLS Certificate)
+
+- **Domain SSL:** `sims.sman1-gianyar.sch.id` (Let's Encrypt SSL Certificate)
+- **Path Sertifikat:** `/etc/letsencrypt/live/sims.sman1-gianyar.sch.id/fullchain.pem`
+- **Konfigurasi Nginx:**
+  - `vhost SSL Port 8443`: `/www/server/panel/vhost/nginx/osisdosman_ssl.conf`
+  - `extension Subpath /osis/`: `/www/server/panel/vhost/nginx/extension/36.93.15.146/osis.conf`
+- **URL Akses HTTPS (SSL Encrypted):**
+  - Public Live Count HTTPS (Port 443): `https://sims.sman1-gianyar.sch.id/osis/quickcount`
+  - Login E-Voting HTTPS (Port 443): `https://sims.sman1-gianyar.sch.id/osis/login`
+  - Admin Dashboard HTTPS (Port 443): `https://sims.sman1-gianyar.sch.id/osis/admin`
+  - Public Live Count HTTPS (Port 8443): `https://sims.sman1-gianyar.sch.id:8443/quickcount`
