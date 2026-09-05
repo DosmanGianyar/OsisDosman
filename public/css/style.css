@@ -271,7 +271,7 @@ body::after {
 
 .candidate-image-wrapper {
   position: relative;
-  height: 280px;
+  height: 380px;
   background: #0f172a;
   overflow: hidden;
 }

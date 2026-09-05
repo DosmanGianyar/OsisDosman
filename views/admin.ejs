@@ -90,12 +90,23 @@
 
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
         <% candidates.forEach(candidate => { %>
-          <form action="/admin/candidate/update" method="POST" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 24px;">
+          <form action="/admin/candidate/update" method="POST" enctype="multipart/form-data" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 24px;">
             <input type="hidden" name="candidate_id" value="<%= candidate.id %>">
 
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
               <span class="paslon-badge" style="position: static;">PASLON 0<%= candidate.candidate_number %></span>
               <span style="font-size: 12px; font-weight: 700; color: #64748b;">ID: <%= candidate.id %></span>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+              <label class="form-label">Foto Candidate Paslon</label>
+              <% if (candidate.photo) { %>
+                <div style="margin-bottom: 10px; border-radius: 12px; overflow: hidden; height: 200px; background: #0f172a; border: 1px solid #cbd5e1;">
+                  <img src="<%= candidate.photo %>" alt="<%= candidate.name %>" style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
+                </div>
+              <% } %>
+              <input type="file" name="photo" accept="image/*" class="form-control" style="padding: 8px;">
+              <small style="font-size: 11px; color: #64748b; margin-top: 4px; display: block;">Upload foto baru untuk mengganti gambar Paslon 0<%= candidate.candidate_number %></small>
             </div>
 
             <div class="form-group">
@@ -129,7 +140,7 @@
             </div>
 
             <button type="submit" class="btn-primary" style="margin-top: 12px; font-size: 13px;">
-              SIMPAN PERUBAHAN PASLON 0<%= candidate.candidate_number %>
+              💾 SIMPAN PERUBAHAN PASLON 0<%= candidate.candidate_number %>
             </button>
           </form>
         <% }) %>

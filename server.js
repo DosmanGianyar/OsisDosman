@@ -5,9 +5,29 @@ const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcryptjs');
+const fs = require('fs');
+const multer = require('multer');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Configure Multer for Candidate Photo Uploads
+const uploadsDir = path.join(__dirname, 'public/uploads/candidates');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadsDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname) || '.jpg';
+    cb(null, 'candidate-' + uniqueSuffix + ext);
+  }
+});
+const upload = multer({ storage: storage });
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
@@ -60,6 +80,47 @@ async function checkDatabaseConnection() {
   }
 }
 checkDatabaseConnection();
+
+// Auto-seed candidates if empty (MariaDB / SQLite fallback)
+async function ensureDefaultCandidates() {
+  try {
+    const rows = await queryDb(`SELECT count(*) as count FROM candidates`);
+    const count = rows[0]?.count || 0;
+    if (count === 0) {
+      console.log('🌱 Seeding default Paslon 01 & Paslon 02 into candidates table...');
+      await runDb(`
+        INSERT INTO candidates (id, voting_session_id, candidate_number, name, vice_name, motto, vision, mission, programs, photo)
+        VALUES (
+          1, 1, 1,
+          'I Made Agus Sukarma',
+          'Ni Putu Ayu Lestari',
+          'Bersama Mewujudkan OSIS DOSMAN yang Inovatif, Kreatif, dan Berprestasi!',
+          'Mewujudkan OSIS SMAN 1 Gianyar yang berintegritas, responsif terhadap perkembangan teknologi, serta wadah utama aspirasi siswa.',
+          '1. Meningkatkan kedisiplinan dan karakter kebangsaan siswa.\n2. Mengembangkan bakat akademik & non-akademik melalui kegiatan digital.\n3. Mengoptimalkan kolaborasi antar-ekstrakurikuler.',
+          '1. DOSMAN E-Sports & Art Championship\n2. Gerakan Zero Plastic School\n3. Pentas Seni & Inovasi Digital',
+          '/uploads/candidates/paslon1.jpg'
+        )
+      `);
+      await runDb(`
+        INSERT INTO candidates (id, voting_session_id, candidate_number, name, vice_name, motto, vision, mission, programs, photo)
+        VALUES (
+          2, 1, 2,
+          'I Kadek Yoga Pratama',
+          'Ni Made Dewi Saraswati',
+          'Unggul dalam Karya, Santun dalam Bersikap, Sinergi untuk DOSMAN!',
+          'Terwujudnya lingkungan sekolah yang harmonis, berwawasan lingkungan, dan berdaya saing di tingkat nasional.',
+          '1. Memperkuat rasa kekeluargaan antar-angkatan siswa SMAN 1 Gianyar.\n2. Membangun ruang literasi dan kewirausahaan muda.\n3. Menggalakkan aksi sosial peduli lingkungan.',
+          '1. DOSMAN Youth Leader Camp\n2. Pojok Literasi & Mini Startup School\n3. Clean & Green DOSMAN Movement',
+          '/uploads/candidates/paslon2.jpg'
+        )
+      `);
+      console.log('✅ Default Paslon candidates seeded successfully!');
+    }
+  } catch (err) {
+    console.error('Error in ensureDefaultCandidates:', err.message);
+  }
+}
+setTimeout(ensureDefaultCandidates, 2000);
 
 // Promisified Query helper supporting MariaDB & SQLite
 function querySqlite(sql, params = []) {
@@ -265,6 +326,7 @@ app.get('/voting', async (req, res) => {
       description: 'Silakan tentukan hak suara Anda secara Langsung, Umum, Bebas, Rahasia, Jujur dan Adil.'
     };
 
+    await ensureDefaultCandidates();
     const candidates = await queryDb(`SELECT * FROM candidates WHERE voting_session_id = ? ORDER BY candidate_number ASC`, [activeSession.id]);
 
     const error = req.session.error;
@@ -347,6 +409,7 @@ app.get('/admin', async (req, res) => {
   }
 
   try {
+    await ensureDefaultCandidates();
     const candidates = await queryDb(`SELECT * FROM candidates WHERE voting_session_id = 1 ORDER BY candidate_number ASC`);
     const success = req.session.success;
     const error = req.session.error;
@@ -388,8 +451,8 @@ app.post('/admin/reset-votes', async (req, res) => {
   }
 });
 
-// Update Candidate Details (Admin)
-app.post('/admin/candidate/update', async (req, res) => {
+// Update Candidate Details & Photo Upload (Admin)
+app.post('/admin/candidate/update', upload.single('photo'), async (req, res) => {
   if (!req.session.user || req.session.user.role !== 'admin') {
     return res.redirect('/login');
   }
@@ -397,14 +460,23 @@ app.post('/admin/candidate/update', async (req, res) => {
   const { candidate_id, name, vice_name, motto, vision, mission, programs } = req.body;
 
   try {
-    await runDb(
-      `UPDATE candidates SET name = ?, vice_name = ?, motto = ?, vision = ?, mission = ?, programs = ? WHERE id = ?`,
-      [name, vice_name, motto, vision, mission, programs, candidate_id]
-    );
-    req.session.success = 'Detail Paslon berhasil diperbarui!';
+    if (req.file) {
+      const photoUrl = '/uploads/candidates/' + req.file.filename;
+      await runDb(
+        `UPDATE candidates SET name = ?, vice_name = ?, motto = ?, vision = ?, mission = ?, programs = ?, photo = ? WHERE id = ?`,
+        [name, vice_name, motto, vision, mission, programs, photoUrl, candidate_id]
+      );
+    } else {
+      await runDb(
+        `UPDATE candidates SET name = ?, vice_name = ?, motto = ?, vision = ?, mission = ?, programs = ? WHERE id = ?`,
+        [name, vice_name, motto, vision, mission, programs, candidate_id]
+      );
+    }
+    req.session.success = 'Detail & foto Paslon berhasil diperbarui!';
     res.redirect('/admin');
   } catch (err) {
     console.error('Candidate update error:', err);
+    req.session.error = 'Gagal memperbarui data Paslon.';
     res.redirect('/admin');
   }
 });
