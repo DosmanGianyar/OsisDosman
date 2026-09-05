@@ -53,7 +53,7 @@
         <% candidates.forEach(candidate => { %>
           <div class="candidate-card" onclick="triggerCandidateSelection(<%= candidate.id %>, 'CALON 0<%= candidate.candidate_number %>', '<%= candidate.name %>')">
             
-            <div class="candidate-image-wrapper">
+            <div class="candidate-image-wrapper" onclick="triggerCandidateSelection(<%= candidate.id %>, 'CALON 0<%= candidate.candidate_number %>', '<%= candidate.name %>')" title="Klik foto untuk memilih CALON 0<%= candidate.candidate_number %>">
               <span class="paslon-badge">CALON 0<%= candidate.candidate_number %></span>
               <% if (candidate.photo) { %>
                 <img src="<%= candidate.photo %>" alt="<%= candidate.name %>" class="candidate-image">
@@ -73,6 +73,14 @@
               <% if (candidate.motto) { %>
                 <div class="motto-box">"<%= candidate.motto %>"</div>
               <% } %>
+
+              <!-- Tombol Coblos Utama (Langsung Terlihat Tanpa Scroll) -->
+              <button type="button" class="btn-coblos" onclick="triggerCandidateSelection(<%= candidate.id %>, 'CALON 0<%= candidate.candidate_number %>', '<%= candidate.name %>')" style="margin-top: 10px; margin-bottom: 10px;">
+                <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                COBLOS CALON 0<%= candidate.candidate_number %>
+              </button>
 
               <!-- Tombol Toggle Tampilkan / Sembunyikan Detail -->
               <button type="button" class="btn-toggle-details" onclick="toggleCandidateDetails(event, <%= candidate.candidate_number %>)">
@@ -97,15 +105,6 @@
                   <div class="section-text" style="background: #fffbeb; padding: 10px; border-radius: 8px; border: 1px solid #fef3c7;"><%= candidate.programs %></div>
                 <% } %>
               </div>
-            </div>
-
-            <div class="candidate-footer">
-              <button type="button" class="btn-coblos">
-                <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                COBLOS CALON 0<%= candidate.candidate_number %>
-              </button>
             </div>
 
           </div>

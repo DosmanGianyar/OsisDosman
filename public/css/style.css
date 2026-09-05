@@ -274,9 +274,10 @@ body::after {
   width: 100%;
   aspect-ratio: 3 / 4;
   height: auto;
-  max-height: 420px;
+  max-height: 310px;
   background: #0f172a;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .candidate-image {
@@ -547,7 +548,7 @@ body::after {
   .candidate-image-wrapper {
     aspect-ratio: 3 / 4 !important;
     height: auto !important;
-    max-height: 260px !important;
+    max-height: 200px !important;
   }
   .candidate-card {
     border-radius: 16px !important;
