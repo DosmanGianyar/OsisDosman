@@ -96,3 +96,18 @@ git push -u origin main
 - **Berkas Dikecualikan (`.gitignore`):** `node_modules/`, `*.sqlite`, `.env` (Keamanan data lokal & credential).
 - **Berkas Ter-Commit (11 Berkas Utama):** `server.js`, `views/login.ejs`, `views/voting.ejs`, `views/admin.ejs`, `public/css/style.css`, `scripts/init-db.js`, `README.md`, `catatan.md`, `package.json`, `package-lock.json`, `.gitignore`.
 - **Status Repository:** Clean & Up to date dengan `origin/main`.
+
+---
+
+## 7. Konfigurasi MikroTik Router (DST-NAT Public Access)
+
+- **IP Publik Router:** `36.93.15.146`
+- **User / Password Router:** `admin` / `t3lk0m2024`
+- **IP Server Lokal (webdosman):** `192.168.50.253` (Port Internal: `3000`)
+- **Aturan DST-NAT:**
+  - `dst-port=3000` -> Forward ke `192.168.50.253:3000`
+  - `dst-port=8080` -> Forward ke `192.168.50.253:3000`
+  - `Hairpin NAT` diaktifkan untuk subnet `192.168.50.0/24`
+- **URL Akses Publik:**
+  - Public Live Count: `http://36.93.15.146:3000/quickcount` atau `http://36.93.15.146:8080/quickcount`
+  - Login E-Voting: `http://36.93.15.146:3000/login` atau `http://36.93.15.146:8080/login`
