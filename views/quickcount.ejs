@@ -82,12 +82,21 @@
 
   <!-- Real-time SSE / Polling Script -->
   <script>
+    // Smooth 1-second digital clock for header badge
+    function updateLiveClock() {
+      const clockEl = document.getElementById('liveTimestamp');
+      if (clockEl) {
+        clockEl.textContent = new Date().toLocaleTimeString('id-ID');
+      }
+    }
+    setInterval(updateLiveClock, 1000);
+    updateLiveClock();
+
     function updateTallyUI(data) {
       document.getElementById('statTotalVoters').textContent = data.total_voters.toLocaleString();
       document.getElementById('statTotalVotes').textContent = data.total_votes.toLocaleString();
       document.getElementById('statTurnoutPercent').textContent = data.turnout_percent + '%';
       document.getElementById('statRemainingVoters').textContent = data.remaining_voters.toLocaleString();
-      document.getElementById('liveTimestamp').textContent = new Date().toLocaleTimeString('id-ID');
 
       const paslonGrid = document.getElementById('paslonGridContainer');
       const summaryContainer = document.getElementById('summaryTallyContainer');
