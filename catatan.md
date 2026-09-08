@@ -99,30 +99,19 @@ git push -u origin main
 
 ---
 
-## 7. Konfigurasi MikroTik Router (DST-NAT Public Access)
+## 7. Konfigurasi Akses IP Publik (MikroTik DST-NAT Public Access)
+
+> **Catatan Akses:** Aplikasi E-Voting OSIS diakses **khusus menggunakan IP Publik & Port** agar terpisah dan tidak mengganggu domain utama sekolah (`sims.sman1-gianyar.sch.id`).
 
 - **IP Publik Router:** `36.93.15.146`
-- **User / Password Router:** `admin` / `t3lk0m2024`
-- **IP Server Lokal (webdosman):** `192.168.50.253` (Port Internal: `3000`)
-- **Aturan DST-NAT:**
-  - `dst-port=3000` -> Forward ke `192.168.50.253:3000`
-  - `dst-port=8080` -> Forward ke `192.168.50.253:3000`
-  - `Hairpin NAT` diaktifkan untuk subnet `192.168.50.0/24`
-- **URL Akses Publik:**
-  - Public Live Count: `http://36.93.15.146:3000/quickcount` atau `http://36.93.15.146:8080/quickcount`
-  - Login E-Voting: `http://36.93.15.146:3000/login` atau `http://36.93.15.146:8080/login`
+- **Port Aktif E-Voting:** `8080` / `3000`
+- **IP Server Lokal (`webdosman`):** `192.168.50.253` (Port Internal: `3000`)
+- **Aturan DST-NAT MikroTik:**
+  - `dst-port=8080` -> Forward ke `192.168.50.253:3000` (Utama untuk Bilik Suara / Aplikasi Kiosk)
+  - `dst-port=3000` -> Forward ke `192.168.50.253:3000` (Cadangan)
 
----
+- **URL Akses IP Publik Resmi (Standar Aplikasi Kiosk/PC):**
+  - **Login Bilik Suara:** `http://36.93.15.146:8080/login`
+  - **Live Count Public:** `http://36.93.15.146:8080/quickcount`
+  - **Admin Dashboard:** `http://36.93.15.146:8080/admin`
 
-## 8. Konfigurasi HTTPS (SSL / TLS Certificate)
-
-- **Domain SSL:** `sims.sman1-gianyar.sch.id` (Let's Encrypt SSL Certificate)
-- **Path Sertifikat:** `/etc/letsencrypt/live/sims.sman1-gianyar.sch.id/fullchain.pem`
-- **Konfigurasi Nginx:**
-  - `vhost SSL Port 8443`: `/www/server/panel/vhost/nginx/osisdosman_ssl.conf`
-  - `extension Subpath /osis/`: `/www/server/panel/vhost/nginx/extension/36.93.15.146/osis.conf`
-- **URL Akses HTTPS (SSL Encrypted):**
-  - Public Live Count HTTPS (Port 443): `https://sims.sman1-gianyar.sch.id/osis/quickcount`
-  - Login E-Voting HTTPS (Port 443): `https://sims.sman1-gianyar.sch.id/osis/login`
-  - Admin Dashboard HTTPS (Port 443): `https://sims.sman1-gianyar.sch.id/osis/admin`
-  - Public Live Count HTTPS (Port 8443): `https://sims.sman1-gianyar.sch.id:8443/quickcount`
