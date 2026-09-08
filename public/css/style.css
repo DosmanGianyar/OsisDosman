@@ -788,6 +788,7 @@ body::after {
     font-size: 9.5px !important;
     border-radius: 8px !important;
     margin-top: 6px !important;
+    margin-bottom: 10px !important;
   }
   .section-label {
     font-size: 9.5px !important;
@@ -815,7 +816,7 @@ body::after {
 /* Button Toggle Detail Visi & Misi */
 .btn-toggle-details {
   width: 100%;
-  padding: 10px 14px;
+  padding: 11px 14px;
   border-radius: 12px;
   background: #f1f5f9;
   border: 1px solid #cbd5e1;
@@ -824,7 +825,8 @@ body::after {
   font-weight: 800;
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-top: 10px;
+  margin-top: 8px;
+  margin-bottom: 14px;
   display: flex;
   align-items: center;
   justify-content: center;

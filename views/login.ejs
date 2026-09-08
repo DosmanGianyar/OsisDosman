@@ -44,7 +44,15 @@
 
         <div class="form-group">
           <label class="form-label">Password</label>
-          <input type="password" name="password" class="form-control" placeholder="Masukkan Password" required>
+          <div style="position: relative; width: 100%;">
+            <input type="password" id="passwordInput" name="password" class="form-control" placeholder="Masukkan Password" required style="padding-right: 44px;">
+            <button type="button" id="togglePasswordBtn" onclick="togglePasswordVisibility()" title="Tampilkan / Sembunyikan Password" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; padding: 4px; display: flex; align-items: center; justify-content: center; transition: color 0.2s ease;">
+              <svg id="eyeIcon" style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         <button type="submit" class="btn-primary" style="margin-top: 10px;">
@@ -59,6 +67,27 @@
   </div>
 
   <script>
+    function togglePasswordVisibility() {
+      const passwordInput = document.getElementById('passwordInput');
+      const eyeIcon = document.getElementById('eyeIcon');
+      const toggleBtn = document.getElementById('togglePasswordBtn');
+      
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleBtn.style.color = '#4f46e5';
+        eyeIcon.innerHTML = `
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858-5.908a10.025 10.025 0 013.98-1.063c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21M3 3l18 18"/>
+        `;
+      } else {
+        passwordInput.type = 'password';
+        toggleBtn.style.color = '#64748b';
+        eyeIcon.innerHTML = `
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        `;
+      }
+    }
+
     // Auto dismiss alert banner after 3 seconds to maintain voting secrecy for the next student
     document.addEventListener('DOMContentLoaded', () => {
       const alertBanners = document.querySelectorAll('.alert-banner');
