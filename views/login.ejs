@@ -18,6 +18,19 @@
         <p style="font-size: 13px; color: #64748b; margin-top: 4px;">SMA Negeri 1 Gianyar &middot; Widya Wahana Bhakti</p>
       </div>
 
+      <% if (typeof kioskModeOnly !== 'undefined' && kioskModeOnly) { %>
+        <% if (typeof isKiosk !== 'undefined' && isKiosk) { %>
+          <div style="margin-bottom: 18px; background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; padding: 8px 14px; border-radius: 12px; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <span style="width: 7px; height: 7px; border-radius: 50%; background: #10b981;"></span>
+            Bilik Suara Terverifikasi &bull; Aplikasi PC Resmi DOSMAN
+          </div>
+        <% } else { %>
+          <div style="margin-bottom: 18px; background: #fff1f2; border: 1px solid #fecdd3; color: #9f1239; padding: 10px 14px; border-radius: 12px; font-size: 11px; font-weight: 600; line-height: 1.4; text-align: center;">
+            🔒 <strong>Mode Bilik Suara Terkunci:</strong> Login pemilih hanya diizinkan melalui Aplikasi Resmi PC. Akses via browser HP diblokir.
+          </div>
+        <% } %>
+      <% } %>
+
       <% if (success) { %>
         <div class="alert-banner alert-success">
           <svg style="width: 20px; height: 20px; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -195,6 +195,44 @@ async function runDb(sql, params = []) {
   return runSqlite(sql, params);
 }
 
+// ─── SYSTEM SETTINGS & KIOSK MODE SECURITY ──────────────────────────────────
+let kioskModeOnly = true;
+
+async function initSystemSettings() {
+  try {
+    if (useMysql) {
+      await runDb(`CREATE TABLE IF NOT EXISTS system_settings (setting_key VARCHAR(100) PRIMARY KEY, setting_value VARCHAR(255))`);
+    } else {
+      await runDb(`CREATE TABLE IF NOT EXISTS system_settings (setting_key TEXT PRIMARY KEY, setting_value TEXT)`);
+    }
+    const rows = await queryDb(`SELECT setting_value FROM system_settings WHERE setting_key = 'kiosk_only' LIMIT 1`);
+    if (rows && rows.length > 0) {
+      kioskModeOnly = rows[0].setting_value === '1';
+    } else {
+      if (useMysql) {
+        await runDb(`INSERT INTO system_settings (setting_key, setting_value) VALUES ('kiosk_only', '1') ON DUPLICATE KEY UPDATE setting_value = '1'`);
+      } else {
+        await runDb(`INSERT OR REPLACE INTO system_settings (setting_key, setting_value) VALUES ('kiosk_only', '1')`);
+      }
+      kioskModeOnly = true;
+    }
+    console.log(`🛡️ Status Proteksi Bilik Suara: ${kioskModeOnly ? 'TERKUNCI KHUSUS APLIKASI KIOSK PC' : 'TERBUKA BEBAS'}`);
+  } catch (err) {
+    console.warn('System settings init warning:', err.message);
+  }
+}
+setTimeout(initSystemSettings, 2500);
+
+function isKioskRequest(req) {
+  const kioskHeader = req.headers['x-dosman-kiosk'];
+  const userAgent = req.get('user-agent') || '';
+  return (
+    kioskHeader === 'dosman-bilik-suara-secure-token-2026' ||
+    userAgent.includes('DosmanKioskApp') ||
+    userAgent.includes('KioskVoting')
+  );
+}
+
 // Global Tally Calculator
 async function getRealtimeTallyData() {
   const voters = await queryDb(`SELECT count(*) as count FROM users WHERE role IN ('siswa', 'guru', 'pegawai', 'staf', 'tendik')`);
@@ -267,7 +305,12 @@ app.get('/login', (req, res) => {
   delete req.session.success;
   delete req.session.error;
 
-  res.render('login', { success, error });
+  res.render('login', {
+    success,
+    error,
+    kioskModeOnly,
+    isKiosk: isKioskRequest(req)
+  });
 });
 
 // Eligible Voter Roles (Siswa, Guru, Pegawai/Staf)
@@ -307,6 +350,12 @@ app.post('/login', async (req, res) => {
 
     // Check if voter (siswa, guru, pegawai) has already voted
     if (VOTER_ROLES.includes((user.role || '').toLowerCase())) {
+      // Security Check: Enforce Kiosk Application if kioskModeOnly is active
+      if (kioskModeOnly && !isKioskRequest(req)) {
+        req.session.error = '⛔ AKSES DITOLAK: Pemungutan suara HANYA DAPAT DILAKUKAN MELALUI APLIKASI BILIK SUARA PC RESMI. Akses langsung melalui HP atau browser biasa tidak diizinkan demi keamanan.';
+        return res.redirect('/login');
+      }
+
       const existingVote = await queryDb(
         `SELECT id FROM votes WHERE voter_id = ? LIMIT 1`,
         [user.id]
@@ -339,6 +388,13 @@ app.post('/login', async (req, res) => {
 // Bilik Suara Voting Page (Siswa, Guru, & Pegawai)
 app.get('/voting', async (req, res) => {
   if (!req.session.user || !VOTER_ROLES.includes((req.session.user.role || '').toLowerCase())) {
+    return res.redirect('/login');
+  }
+
+  // Security Check: If Kiosk Mode is enforced, reject regular browsers
+  if (kioskModeOnly && !isKioskRequest(req)) {
+    req.session.error = '⛔ Sesi bilik suara hanya dapat diakses melalui Aplikasi Bilik Suara PC Resmi.';
+    req.session.user = null;
     return res.redirect('/login');
   }
 
@@ -455,12 +511,58 @@ app.get('/admin', async (req, res) => {
       user: req.session.user,
       candidates: candidates,
       success: success,
-      error: error
+      error: error,
+      kioskModeOnly: kioskModeOnly
     });
   } catch (err) {
     console.error('Admin page error:', err);
     res.redirect('/login');
   }
+});
+
+// Toggle Kiosk Mode Security Setting (Admin only)
+app.post('/admin/settings/kiosk-mode', async (req, res) => {
+  if (!req.session.user || req.session.user.role !== 'admin') {
+    return res.redirect('/login');
+  }
+
+  const enabled = req.body.kiosk_only === '1';
+  kioskModeOnly = enabled;
+
+  try {
+    if (useMysql) {
+      await runDb(
+        `INSERT INTO system_settings (setting_key, setting_value) VALUES ('kiosk_only', ?) ON DUPLICATE KEY UPDATE setting_value = ?`,
+        [enabled ? '1' : '0', enabled ? '1' : '0']
+      );
+    } else {
+      await runDb(
+        `INSERT OR REPLACE INTO system_settings (setting_key, setting_value) VALUES ('kiosk_only', ?)`,
+        [enabled ? '1' : '0']
+      );
+    }
+
+    req.session.success = enabled
+      ? '🛡️ Mode Kiosk Berhasil DIAKTIFKAN: Pemilihan suara sekarang TERKUNCI khusus untuk Aplikasi Bilik Suara PC (Akses HP/Browser umum diblokir).'
+      : '⚠️ Mode Kiosk DINONAKTIFKAN: Pemilihan suara sekarang dapat diakses secara bebas dari browser biasa.';
+  } catch (err) {
+    req.session.error = 'Gagal menyimpan pengaturan: ' + err.message;
+  }
+
+  res.redirect('/admin');
+});
+
+// Download Kiosk Application Package (.RAR / .ZIP)
+app.get('/download/kiosk-app', (req, res) => {
+  const rarPath = path.join(__dirname, 'public/downloads/Bilik-Suara-DOSMAN-Windows.rar');
+  const zipPath = path.join(__dirname, 'public/downloads/Bilik-Suara-DOSMAN-Windows.zip');
+  
+  if (fs.existsSync(rarPath)) {
+    return res.download(rarPath, 'Bilik-Suara-DOSMAN-Windows.rar');
+  } else if (fs.existsSync(zipPath)) {
+    return res.download(zipPath, 'Bilik-Suara-DOSMAN-Windows.zip');
+  }
+  res.status(404).send('Paket aplikasi bilik suara belum tersedia untuk diunduh.');
 });
 
 // Reset All Votes (Admin only with DOSMAN security confirmation)

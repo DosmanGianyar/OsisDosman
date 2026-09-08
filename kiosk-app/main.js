@@ -11,7 +11,11 @@ let config = {
   exitShortcut: 'CommandOrControl+Shift+Q'
 };
 
-const configPath = path.join(__dirname, 'config.json');
+// Load Configuration (Checks external config.json next to .exe first, then defaults)
+const externalConfigPath = path.join(path.dirname(process.execPath), 'config.json');
+const internalConfigPath = path.join(__dirname, 'config.json');
+const configPath = fs.existsSync(externalConfigPath) ? externalConfigPath : internalConfigPath;
+
 if (fs.existsSync(configPath)) {
   try {
     const rawData = fs.readFileSync(configPath, 'utf8');
@@ -41,6 +45,16 @@ function createWindow() {
       contextIsolation: true,
       devTools: false // Completely disable DevTools
     }
+  });
+
+  // Set dedicated User-Agent for DOSMAN Kiosk PC
+  const currentUA = mainWindow.webContents.userAgent;
+  mainWindow.webContents.setUserAgent(`${currentUA} DosmanKioskApp/1.0 (Windows NT 6.2; KioskVoting)`);
+
+  // Intercept all requests from this window and attach secure token header
+  mainWindow.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => {
+    details.requestHeaders['X-Dosman-Kiosk'] = 'dosman-bilik-suara-secure-token-2026';
+    callback({ cancel: false, requestHeaders: details.requestHeaders });
   });
 
   // Block right-click context menu

@@ -39,6 +39,59 @@
       <div class="alert-banner alert-error">⚠️ <%= error %></div>
     <% } %>
 
+    <!-- Section 0: Kontrol Keamanan & Saklar Bilik Suara (Kiosk Mode Lock) -->
+    <div style="background: <%= kioskModeOnly ? 'linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95))' : 'linear-gradient(135deg, rgba(69, 26, 3, 0.95), rgba(30, 41, 59, 0.95))' %>; backdrop-filter: blur(20px); border-radius: 24px; padding: 28px 32px; margin-bottom: 28px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); border: 1px solid <%= kioskModeOnly ? 'rgba(16, 185, 129, 0.3)' : 'rgba(245, 158, 11, 0.3)' %>; color: #fff;">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px;">
+        <div style="max-width: 650px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+            <span style="font-size: 20px;">🛡️</span>
+            <h2 style="font-size: 18px; font-weight: 800; color: #fff; margin: 0; letter-spacing: 0.3px;">
+              SAKLAR KEAMANAN BILIK SUARA (KIOSK LOCK)
+            </h2>
+            <% if (kioskModeOnly) { %>
+              <span style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #34d399; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px;">
+                <span style="width: 7px; height: 7px; border-radius: 50%; background: #10b981; animation: spin 1s infinite alternate;"></span>
+                TERKUNCI KHUSUS APLIKASI PC
+              </span>
+            <% } else { %>
+              <span style="background: rgba(245, 158, 11, 0.2); border: 1px solid #f59e0b; color: #fbbf24; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px;">
+                <span style="width: 7px; height: 7px; border-radius: 50%; background: #f59e0b;"></span>
+                TERBUKA BEBAS (SEMUA BROWSER)
+              </span>
+            <% } %>
+          </div>
+
+          <p style="font-size: 13px; color: #cbd5e1; line-height: 1.5; margin: 0;">
+            <% if (kioskModeOnly) { %>
+              <strong>Status Aktif:</strong> Pemilih (siswa/guru) <strong>HANYA BISA LOGIN</strong> melalui aplikasi resmi <em>Bilik Suara DOSMAN</em> di PC bilik suara. Akses lewat browser HP/laptop biasa <strong>otomatis diblokir</strong>.
+            <% } else { %>
+              <strong>Mode Darurat:</strong> Siapa saja dapat login dan memilih melalui browser umum (HP maupun laptop biasa). Gunakan mode ini hanya bila terjadi kendala teknis pada PC bilik suara.
+            <% } %>
+          </p>
+        </div>
+
+        <!-- Tombol Saklar & Download App -->
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+          <a href="/download/kiosk-app" class="btn-download-app" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); color: #e2e8f0; padding: 10px 18px; border-radius: 14px; font-size: 12px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease;">
+            📦 Unduh Aplikasi Windows (.RAR)
+          </a>
+
+          <form action="/admin/settings/kiosk-mode" method="POST" style="margin: 0;">
+            <input type="hidden" name="kiosk_only" value="<%= kioskModeOnly ? '0' : '1' %>">
+            <% if (kioskModeOnly) { %>
+              <button type="submit" style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.5); color: #fca5a5; padding: 10px 18px; border-radius: 14px; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease;">
+                🔓 Matikan Kunci (Buka Bebas)
+              </button>
+            <% } else { %>
+              <button type="submit" style="background: linear-gradient(135deg, #10b981, #059669); border: none; color: #fff; padding: 10px 20px; border-radius: 14px; font-size: 12px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); transition: all 0.2s ease;">
+                🔒 Kunci Khusus Aplikasi PC
+              </button>
+            <% } %>
+          </form>
+        </div>
+      </div>
+    </div>
+
     <!-- Section 1: Real-Time Live Tally Counts -->
     <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-radius: 24px; padding: 32px; margin-bottom: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
