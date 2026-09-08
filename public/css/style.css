@@ -326,31 +326,64 @@ body::after {
 }
 
 .candidate-body {
-  padding: 24px;
+  padding: 20px 24px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .candidate-name {
   font-size: 20px;
   font-weight: 800;
   color: #0f172a;
-  line-height: 1.2;
+  line-height: 1.3;
+  text-align: center;
+  width: 100%;
+  letter-spacing: -0.3px;
+  margin-bottom: 10px;
+  transition: color 0.25s ease;
+  position: relative;
+}
+
+.candidate-name::after {
+  content: '';
+  display: block;
+  width: 36px;
+  height: 3px;
+  background: linear-gradient(90deg, #6366f1, #3b82f6);
+  border-radius: 4px;
+  margin: 8px auto 0 auto;
+  opacity: 0.85;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.candidate-card:hover .candidate-name::after {
+  width: 56px;
+  background: linear-gradient(90deg, #10b981, #3b82f6);
 }
 
 .candidate-vice {
   font-size: 14px;
   font-weight: 700;
   color: var(--primary-color);
-  margin-top: 4px;
+  margin-top: 2px;
+  text-align: center;
+  width: 100%;
 }
 
 .motto-box {
-  background: #f1f5f9;
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
-  padding: 10px 14px;
-  font-size: 12px;
+  padding: 10px 16px;
+  font-size: 12.5px;
   font-style: italic;
   color: #475569;
-  margin: 14px 0;
+  margin: 12px 0 16px 0;
+  width: 100%;
+  text-align: center;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 .section-label {
@@ -466,6 +499,114 @@ body::after {
 
 .modal-overlay.active .modal-box {
   transform: scale(1);
+}
+
+/* Modal Visi & Misi Custom Layout */
+.modal-box-lg {
+  max-width: 580px;
+  width: 92%;
+  padding: 24px 28px 28px 28px;
+  text-align: left;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.modal-header-custom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 16px;
+}
+
+.modal-close-btn {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.modal-close-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+  transform: scale(1.05);
+}
+
+.modal-scroll-body {
+  overflow-y: auto;
+  padding-right: 6px;
+  flex: 1;
+}
+
+.modal-candidate-profile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(135deg, #f8fafc, #edf2f7);
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+}
+
+.modal-candidate-avatar {
+  width: 60px;
+  height: 80px;
+  border-radius: 12px;
+  object-fit: cover;
+  object-position: center top;
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+}
+
+.modal-vision-card {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+
+.modal-mission-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+
+.modal-program-card {
+  background: #fffbeb;
+  border: 1px solid #fef3c7;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+
+.modal-section-title {
+  font-size: 11.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
 }
 
 .modal-actions {

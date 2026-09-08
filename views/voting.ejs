@@ -81,56 +81,97 @@
                 <div class="motto-box">"<%= candidate.motto %>"</div>
               <% } %>
 
-              <!-- Tombol Coblos Utama (Langsung Terlihat Tanpa Scroll) -->
+              <!-- Tombol Modal Detail Visi & Misi -->
+              <button type="button" class="btn-toggle-details"
+                data-candidate-id="<%= candidate.id %>"
+                data-number="0<%= candidate.candidate_number %>"
+                data-name="<%= candidate.name %>"
+                data-photo="<%= candidate.photo || '' %>"
+                data-motto="<%= candidate.motto || '' %>"
+                data-vision="<%= candidate.vision || '' %>"
+                data-mission="<%= candidate.mission || '' %>"
+                data-programs="<%= candidate.programs || '' %>"
+                onclick="openVisionModalFromButton(this)">
+                <span>📋 Detail Visi &amp; Misi</span>
+              </button>
+
+              <!-- Tombol Coblos Utama -->
               <button type="button" class="btn-coblos" onclick="triggerCandidateSelection(<%= candidate.id %>, 'CALON 0<%= candidate.candidate_number %>', '<%= candidate.name %>')">
                 <svg style="width: 16px; height: 16px; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 <span>COBLOS CALON 0<%= candidate.candidate_number %></span>
               </button>
-
-              <!-- Tombol Toggle Tampilkan / Sembunyikan Detail -->
-              <button type="button" class="btn-toggle-details" onclick="toggleCandidateDetails(event, <%= candidate.candidate_number %>)">
-                <span id="toggleIcon-<%= candidate.candidate_number %>">📋</span>
-                <span id="toggleText-<%= candidate.candidate_number %>">Tampilkan Detail Visi &amp; Misi</span>
-              </button>
-
-              <!-- Container Detail Tersembunyi (Collapsible) -->
-              <div id="candidateDetails-<%= candidate.candidate_number %>" class="candidate-details-collapsible" style="display: none; margin-top: 10px;">
-                <% if (candidate.vision) { %>
-                  <div class="section-label">Visi Calon</div>
-                  <div class="section-text"><%= candidate.vision %></div>
-                <% } %>
-
-                <% if (candidate.mission) { %>
-                  <div class="section-label">Misi Calon</div>
-                  <div class="section-text"><%= candidate.mission %></div>
-                <% } %>
-
-                <% if (candidate.programs) { %>
-                  <div class="section-label" style="color: #d97706;">Program Kerja Unggulan</div>
-                  <div class="section-text" style="background: #fffbeb; padding: 8px; border-radius: 8px; border: 1px solid #fef3c7;"><%= candidate.programs %></div>
-                <% } %>
-              </div>
             </div>
 
           </div>
         <% }) %>
       </div>
 
-      <!-- Opsi Tidak Memilih (Abstain) -->
-      <div class="abstain-card">
-        <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 6px;">Opsi Tidak Memilih (Abstain)</h3>
-        <p style="font-size: 13px; color: rgba(255,255,255,0.7); max-width: 500px; margin: 0 auto;">
-          Jika Anda memilih untuk tidak menyalurkan suara pada salah satu calon ketua OSIS di atas.
-        </p>
-        <button type="button" class="btn-abstain" onclick="triggerAbstainSelection()">
-          ∅ PILIH TIDAK MEMILIH (ABSTAIN)
+    </form>
+
+  </div>
+
+  <!-- Modal Detail Visi & Misi Calon -->
+  <div class="modal-overlay" id="visionModal">
+    <div class="modal-box modal-box-lg">
+      
+      <!-- Header Modal -->
+      <div class="modal-header-custom">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span id="visionModalBadge" class="paslon-badge-static" style="font-size: 11px; padding: 4px 12px;">CALON 01</span>
+          <h3 style="font-size: 17px; font-weight: 800; color: #0f172a; margin: 0;">Detail Visi &amp; Misi</h3>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="closeVisionModal()">&times;</button>
+      </div>
+
+      <!-- Scrollable Body -->
+      <div class="modal-scroll-body">
+        
+        <!-- Profile Mini Banner -->
+        <div class="modal-candidate-profile">
+          <img id="visionModalPhoto" src="" alt="" class="modal-candidate-avatar" style="display: none;">
+          <div>
+            <h4 id="visionModalName" style="font-size: 17px; font-weight: 800; color: #0f172a; line-height: 1.25;">—</h4>
+            <p id="visionModalMotto" style="font-size: 12px; font-style: italic; color: #475569; margin-top: 4px; display: none;"></p>
+          </div>
+        </div>
+
+        <!-- Section Visi -->
+        <div id="visionSectionContainer" class="modal-vision-card">
+          <div class="modal-section-title" style="color: #0284c7;">
+            <span>🎯</span> VISI CALON
+          </div>
+          <p id="visionModalVision" class="section-text" style="font-size: 13.5px; color: #0c4a6e; font-weight: 500; margin: 0;"></p>
+        </div>
+
+        <!-- Section Misi -->
+        <div id="missionSectionContainer" class="modal-mission-card">
+          <div class="modal-section-title" style="color: #4f46e5;">
+            <span>🚀</span> MISI CALON
+          </div>
+          <p id="visionModalMission" class="section-text" style="font-size: 13.5px; color: #334155; margin: 0;"></p>
+        </div>
+
+        <!-- Section Program Kerja -->
+        <div id="programsSectionContainer" class="modal-program-card">
+          <div class="modal-section-title" style="color: #d97706;">
+            <span>💡</span> PROGRAM KERJA UNGGULAN
+          </div>
+          <p id="visionModalPrograms" class="section-text" style="font-size: 13.5px; color: #78350f; margin: 0;"></p>
+        </div>
+
+      </div>
+
+      <!-- Action Footer -->
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; padding-top: 14px; border-top: 1px solid #e2e8f0;">
+        <button type="button" class="btn-modal-cancel" style="width: auto; padding: 12px 20px;" onclick="closeVisionModal()">Tutup</button>
+        <button type="button" id="visionModalCoblosBtn" class="btn-coblos" style="width: auto; padding: 12px 22px; font-size: 14px;">
+          <span>COBLOS CALON INI</span>
         </button>
       </div>
 
-    </form>
-
+    </div>
   </div>
 
   <!-- Modal Konfirmasi Ballot -->
@@ -166,21 +207,79 @@
   <script>
     let isSubmitting = false;
 
-    function toggleCandidateDetails(event, candidateNumber) {
-      event.stopPropagation(); // Stop card click selection
-      const detailsDiv = document.getElementById('candidateDetails-' + candidateNumber);
-      const toggleText = document.getElementById('toggleText-' + candidateNumber);
-      const toggleIcon = document.getElementById('toggleIcon-' + candidateNumber);
+    function openVisionModalFromButton(btn) {
+      const candidateId = btn.dataset.candidateId;
+      const number = btn.dataset.number;
+      const name = btn.dataset.name;
+      const photo = btn.dataset.photo;
+      const motto = btn.dataset.motto;
+      const vision = btn.dataset.vision;
+      const mission = btn.dataset.mission;
+      const programs = btn.dataset.programs;
 
-      if (detailsDiv.style.display === 'none' || detailsDiv.style.display === '') {
-        detailsDiv.style.display = 'block';
-        toggleText.textContent = 'Sembunyikan Detail';
-        toggleIcon.textContent = '🙈';
+      document.getElementById('visionModalBadge').textContent = 'CALON ' + number;
+      if (number === '02') {
+        document.getElementById('visionModalBadge').classList.add('paslon-2');
       } else {
-        detailsDiv.style.display = 'none';
-        toggleText.textContent = 'Tampilkan Detail Visi & Misi';
-        toggleIcon.textContent = '📋';
+        document.getElementById('visionModalBadge').classList.remove('paslon-2');
       }
+
+      document.getElementById('visionModalName').textContent = name;
+
+      const photoEl = document.getElementById('visionModalPhoto');
+      if (photo) {
+        photoEl.src = photo;
+        photoEl.style.display = 'block';
+      } else {
+        photoEl.style.display = 'none';
+      }
+
+      const mottoEl = document.getElementById('visionModalMotto');
+      if (motto) {
+        mottoEl.textContent = '"' + motto + '"';
+        mottoEl.style.display = 'block';
+      } else {
+        mottoEl.style.display = 'none';
+      }
+
+      const visionEl = document.getElementById('visionModalVision');
+      const visionBox = document.getElementById('visionSectionContainer');
+      if (vision && vision.trim() !== '') {
+        visionEl.textContent = vision;
+        visionBox.style.display = 'block';
+      } else {
+        visionBox.style.display = 'none';
+      }
+
+      const missionEl = document.getElementById('visionModalMission');
+      const missionBox = document.getElementById('missionSectionContainer');
+      if (mission && mission.trim() !== '') {
+        missionEl.textContent = mission;
+        missionBox.style.display = 'block';
+      } else {
+        missionBox.style.display = 'none';
+      }
+
+      const programsEl = document.getElementById('visionModalPrograms');
+      const programsBox = document.getElementById('programsSectionContainer');
+      if (programs && programs.trim() !== '') {
+        programsEl.textContent = programs;
+        programsBox.style.display = 'block';
+      } else {
+        programsBox.style.display = 'none';
+      }
+
+      const coblosBtn = document.getElementById('visionModalCoblosBtn');
+      coblosBtn.onclick = function() {
+        closeVisionModal();
+        triggerCandidateSelection(candidateId, 'CALON ' + number, name);
+      };
+
+      document.getElementById('visionModal').classList.add('active');
+    }
+
+    function closeVisionModal() {
+      document.getElementById('visionModal').classList.remove('active');
     }
 
     function triggerCandidateSelection(candidateId, badgeText, name) {
@@ -188,16 +287,6 @@
       document.getElementById('selectedCandidateId').value = candidateId;
       document.getElementById('modalPaslonBadge').textContent = badgeText;
       document.getElementById('modalPaslonName').textContent = name;
-      openModal();
-    }
-
-    function triggerAbstainSelection() {
-      if (isSubmitting) return;
-      document.getElementById('selectedCandidateId').value = 'abstain';
-      document.getElementById('modalPaslonBadge').textContent = 'TIDAK MEMILIH';
-      document.getElementById('modalPaslonBadge').style.background = '#475569';
-      document.getElementById('modalPaslonName').textContent = 'Opsi Abstain (Golput)';
-      document.getElementById('modalPaslonVice').textContent = 'Anda memilih untuk tidak memilih calon manapun';
       openModal();
     }
 

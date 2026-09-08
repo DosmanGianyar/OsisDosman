@@ -397,18 +397,19 @@ app.post('/voting/vote', async (req, res) => {
       return res.redirect('/login');
     }
 
-    let candidateIdToInsert = null;
-    let candidateName = 'Opsi TIDAK MEMILIH (Abstain)';
-
-    if (candidate_id && candidate_id !== 'abstain' && candidate_id !== '0') {
-      const selectedCandidate = await queryDb(`SELECT * FROM candidates WHERE id = ? LIMIT 1`, [candidate_id]);
-      if (selectedCandidate.length > 0) {
-        candidateIdToInsert = selectedCandidate[0].id;
-        candidateName = selectedCandidate[0].vice_name 
-          ? `Paslon 0${selectedCandidate[0].candidate_number} (${selectedCandidate[0].name} & ${selectedCandidate[0].vice_name})`
-          : selectedCandidate[0].name;
-      }
+    // Require selecting a candidate (Abstain is strictly prohibited)
+    if (!candidate_id || candidate_id === 'abstain' || candidate_id === '0') {
+      req.session.error = 'Anda harus memilih salah satu calon ketua OSIS!';
+      return res.redirect('/voting');
     }
+
+    const selectedCandidate = await queryDb(`SELECT * FROM candidates WHERE id = ? LIMIT 1`, [candidate_id]);
+    if (selectedCandidate.length === 0) {
+      req.session.error = 'Pilihan calon tidak valid. Silakan pilih calon yang tersedia.';
+      return res.redirect('/voting');
+    }
+
+    const candidateIdToInsert = selectedCandidate[0].id;
 
     // Insert Vote into Database
     await runDb(

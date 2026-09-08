@@ -220,8 +220,8 @@
         paslonGrid.appendChild(card);
       });
 
-      // Render Abstain Card (Di Bawahnya)
-      if (data.abstain) {
+      // Render Abstain Card (Hanya jika ada data historis > 0)
+      if (data.abstain && data.abstain.count > 0) {
         const summaryCard = document.createElement('div');
         summaryCard.style.background = '#f8fafc';
         summaryCard.style.border = '1px solid #cbd5e1';
