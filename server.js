@@ -289,6 +289,11 @@ app.get('/realtime', (req, res) => {
   res.render('quickcount');
 });
 
+// Dedicated Secret Download Page for Kiosk App (No login required)
+app.get('/aplikasibuatandarmaputra', (req, res) => {
+  res.render('download-kiosk');
+});
+
 // Redirect Root to Login
 app.get('/', (req, res) => {
   if (req.session.user) {
