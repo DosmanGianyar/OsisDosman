@@ -29,10 +29,10 @@
       </div>
     </header>
 
-    <!-- Banner Session -->
-    <div class="session-banner" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 20px 24px; color: #fff; margin-bottom: 24px;">
-      <h2 style="font-size: 20px; font-weight: 800;"><%= session.title %></h2>
-      <p style="font-size: 13px; color: rgba(255,255,255,0.85); margin-top: 4px;"><%= session.description %></p>
+    <!-- Banner Session (Aligned Center) -->
+    <div class="session-banner">
+      <h2 class="session-banner-title"><%= session.title %></h2>
+      <p class="session-banner-subtitle"><%= session.description %></p>
     </div>
 
     <% if (error) { %>
