@@ -115,3 +115,13 @@ git push -u origin main
   - **Live Count Public:** `http://36.93.15.146:8080/quickcount`
   - **Admin Dashboard:** `http://36.93.15.146:8080/admin`
 
+- **Catatan Keamanan Aplikasi Bilik Suara (9 September 2026):**
+  - Halaman publik `/aplikasibuatandarmaputra` telah **dinonaktifkan (404)** agar siswa tidak dapat mengunduh client kiosk secara sembarangan.
+  - Endpoint `/download/kiosk-app` diproteksi ketat: **hanya akun Admin yang login** yang dapat mengunduh paket Windows `.rar`.
+  - Berkas fisik dipindahkan ke folder privat `/downloads/` (di luar `public/`) agar tidak dapat diakses langsung lewat link statis.
+
+### Perintah Deployment Otomatis OsisDosman (PowerShell):
+```powershell
+echo y | plink -pw Dosman123 dosman@100.73.61.126 "echo Dosman123 | sudo -S sh -c 'cd /www/wwwroot/OsisDosman && git pull origin main && pm2 restart OsisDosman'"
+```
+
