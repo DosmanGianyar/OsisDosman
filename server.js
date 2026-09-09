@@ -289,8 +289,17 @@ app.get('/realtime', (req, res) => {
   res.render('quickcount');
 });
 
-// Dedicated Secret Download Page for Kiosk App (No login required)
+// Halaman download kiosk publik telah dinonaktifkan demi keamanan bilik suara
+// Hanya admin yang dapat mengakses panduan & unduhan aplikasi bilik suara
 app.get('/aplikasibuatandarmaputra', (req, res) => {
+  res.status(404).send('Halaman tidak ditemukan atau telah dinonaktifkan.');
+});
+
+// Admin-only Kiosk Download Guide
+app.get('/admin/download-kiosk', (req, res) => {
+  if (!req.session.user || req.session.user.role !== 'admin') {
+    return res.redirect('/login');
+  }
   res.render('download-kiosk');
 });
 
@@ -557,15 +566,25 @@ app.post('/admin/settings/kiosk-mode', async (req, res) => {
   res.redirect('/admin');
 });
 
-// Download Kiosk Application Package (.RAR / .ZIP)
+// Download Kiosk Application Package (.RAR / .ZIP) - Khusus Admin
 app.get('/download/kiosk-app', (req, res) => {
-  const rarPath = path.join(__dirname, 'public/downloads/Bilik-Suara-DOSMAN-Windows.rar');
-  const zipPath = path.join(__dirname, 'public/downloads/Bilik-Suara-DOSMAN-Windows.zip');
+  if (!req.session.user || req.session.user.role !== 'admin') {
+    return res.status(403).send('Akses ditolak. Berkas aplikasi bilik suara hanya dapat diunduh oleh Admin/Panitia yang telah login.');
+  }
+
+  const rarPath = path.join(__dirname, 'downloads/Bilik-Suara-DOSMAN-Windows.rar');
+  const rarPathPublic = path.join(__dirname, 'public/downloads/Bilik-Suara-DOSMAN-Windows.rar');
+  const zipPath = path.join(__dirname, 'downloads/Bilik-Suara-DOSMAN-Windows.zip');
+  const zipPathPublic = path.join(__dirname, 'public/downloads/Bilik-Suara-DOSMAN-Windows.zip');
   
   if (fs.existsSync(rarPath)) {
     return res.download(rarPath, 'Bilik-Suara-DOSMAN-Windows.rar');
+  } else if (fs.existsSync(rarPathPublic)) {
+    return res.download(rarPathPublic, 'Bilik-Suara-DOSMAN-Windows.rar');
   } else if (fs.existsSync(zipPath)) {
     return res.download(zipPath, 'Bilik-Suara-DOSMAN-Windows.zip');
+  } else if (fs.existsSync(zipPathPublic)) {
+    return res.download(zipPathPublic, 'Bilik-Suara-DOSMAN-Windows.zip');
   }
   res.status(404).send('Paket aplikasi bilik suara belum tersedia untuk diunduh.');
 });
